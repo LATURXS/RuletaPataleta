@@ -1,8 +1,12 @@
 {
-  "1": "Esguince",
-  "2": "Rodilla",
-  "3": "Lumbago",
-  "4": "Mano",
-  "5": "Migraña",
-  "6": "Me meo"
+  "lesion1": "Dolor de rodilla izquierda",
+  "lesion2": "Contractura en el hombro",
+  "lesion3": "Esguince de tobillo",
+  "lesion4": "Dolor lumbar",
+  "lesion5": "Tendinitis en el codo",
+  "lesion6": "Molestias cervicales",
+  "lesion7": "Dolor en la muñeca",
+  "lesion8": "Contractura gemelo",
+  "lesion9": "Molestias en cadera",
+  "lesion10": "Dolor intercostal"
 }

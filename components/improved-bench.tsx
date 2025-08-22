@@ -4,82 +4,65 @@ import type { ReactNode } from "react"
 
 interface ImprovedBenchProps {
   children: ReactNode
-  isSpinning: boolean
+  isSpinning?: boolean
 }
 
-export function ImprovedBench({ children, isSpinning }: ImprovedBenchProps) {
+export function ImprovedBench({ children, isSpinning = false }: ImprovedBenchProps) {
   return (
     <div className="relative">
-      {/* Decoraciones con plantas y flores POR ENCIMA del marco */}
-      <div className="absolute -top-8 left-8 text-3xl animate-bounce z-20" style={{ animationDelay: "0s" }}>
-        🌸
-      </div>
-      <div className="absolute -top-8 right-8 text-3xl animate-bounce z-20" style={{ animationDelay: "0.5s" }}>
-        🌺
-      </div>
-      <div
-        className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-2xl animate-bounce z-20"
-        style={{ animationDelay: "1s" }}
+      {/* Área del banquillo */}
+      <svg
+        width="500"
+        height="320"
+        viewBox="0 0 500 320"
+        className="border-2 border-red-400 rounded-lg bg-gradient-to-b from-red-100 to-red-200 shadow-lg"
       >
-        🌻
-      </div>
-      <div className="absolute -top-6 left-20 text-2xl animate-bounce z-20" style={{ animationDelay: "1.5s" }}>
-        🌿
-      </div>
-      <div className="absolute -top-6 right-20 text-2xl animate-bounce z-20" style={{ animationDelay: "2s" }}>
-        🌷
-      </div>
-      <div className="absolute -top-6 left-32 text-xl animate-bounce z-20" style={{ animationDelay: "2.5s" }}>
-        🌱
-      </div>
+        {/* Banco superior */}
+        <rect x="50" y="60" width="400" height="20" fill="#8B4513" rx="10" />
+        <rect x="50" y="75" width="400" height="8" fill="#654321" rx="4" />
 
-      {/* Marco del banquillo - AJUSTADO para 2 bancos */}
-      <div
-        className={`relative bg-gradient-to-br from-red-100 to-red-200 border-4 border-red-400 rounded-2xl shadow-xl transition-all duration-500 ${
-          isSpinning ? "animate-pulse" : ""
-        }`}
-        style={{
-          width: "500px", // Más ancho para 3 jugadoras por banco
-          height: "400px", // Más bajo ya que solo hay 2 bancos
-          padding: "25px",
-        }}
-      >
-        {/* Fondo del banquillo */}
-        <div className="absolute inset-0 bg-gradient-to-br from-red-50/50 to-red-100/50 rounded-2xl"></div>
+        {/* Banco inferior */}
+        <rect x="50" y="220" width="400" height="20" fill="#8B4513" rx="10" />
+        <rect x="50" y="235" width="400" height="8" fill="#654321" rx="4" />
 
-        {/* Solo 2 bancos - AJUSTADOS a la mitad del cuerpo */}
-        <div className="absolute inset-6">
-          {/* Banco superior - A la mitad del cuerpo de la primera fila */}
-          <div className="absolute top-24 left-6 right-6 h-8 bg-gradient-to-b from-amber-600 to-amber-800 rounded-lg shadow-lg border-2 border-amber-700">
-            {/* Patas del banco */}
-            <div className="absolute -bottom-2 left-8 w-2 h-4 bg-amber-800 rounded-b"></div>
-            <div className="absolute -bottom-2 right-8 w-2 h-4 bg-amber-800 rounded-b"></div>
-            <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-2 h-4 bg-amber-800 rounded-b"></div>
-            <div className="absolute -bottom-2 left-1/4 w-2 h-4 bg-amber-800 rounded-b"></div>
-            <div className="absolute -bottom-2 right-1/4 w-2 h-4 bg-amber-800 rounded-b"></div>
-            {/* Superficie del banco */}
-            <div className="absolute inset-1 bg-amber-500 rounded opacity-50"></div>
-          </div>
+        {/* Decoraciones del banquillo */}
+        {/* Plantas en macetas */}
+        <g>
+          {/* Maceta 1 */}
+          <rect x="20" y="100" width="15" height="20" fill="#CD853F" />
+          <path d="M 22 100 Q 27.5 95 33 100" fill="#228B22" />
+          <path d="M 25 98 Q 27.5 93 30 98" fill="#32CD32" />
 
-          {/* Banco inferior - A la mitad del cuerpo de la segunda fila */}
-          <div className="absolute top-64 left-6 right-6 h-8 bg-gradient-to-b from-amber-600 to-amber-800 rounded-lg shadow-lg border-2 border-amber-700">
-            <div className="absolute -bottom-2 left-8 w-2 h-4 bg-amber-800 rounded-b"></div>
-            <div className="absolute -bottom-2 right-8 w-2 h-4 bg-amber-800 rounded-b"></div>
-            <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-2 h-4 bg-amber-800 rounded-b"></div>
-            <div className="absolute -bottom-2 left-1/4 w-2 h-4 bg-amber-800 rounded-b"></div>
-            <div className="absolute -bottom-2 right-1/4 w-2 h-4 bg-amber-800 rounded-b"></div>
-            <div className="absolute inset-1 bg-amber-500 rounded opacity-50"></div>
-          </div>
-        </div>
+          {/* Maceta 2 */}
+          <rect x="465" y="100" width="15" height="20" fill="#CD853F" />
+          <path d="M 467 100 Q 472.5 95 478 100" fill="#228B22" />
+          <path d="M 470 98 Q 472.5 93 475 98" fill="#32CD32" />
 
-        {/* Contenedor de jugadoras (por encima de los bancos) */}
-        <div className="relative z-10 h-full">{children}</div>
+          {/* Maceta 3 */}
+          <rect x="20" y="260" width="15" height="20" fill="#CD853F" />
+          <path d="M 22 260 Q 27.5 255 33 260" fill="#228B22" />
+          <path d="M 25 258 Q 27.5 253 30 258" fill="#32CD32" />
 
-        {/* Decoración de regadera y plantas en el suelo */}
-        <div className="absolute bottom-3 right-3 text-2xl animate-pulse">🪴</div>
-        <div className="absolute bottom-3 left-3 text-xl">💧</div>
-        <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 text-lg">🌿</div>
-      </div>
+          {/* Maceta 4 */}
+          <rect x="465" y="260" width="15" height="20" fill="#CD853F" />
+          <path d="M 467 260 Q 472.5 255 478 260" fill="#228B22" />
+          <path d="M 470 258 Q 472.5 253 475 258" fill="#32CD32" />
+        </g>
+
+        {/* Texto decorativo */}
+        <text x="250" y="30" textAnchor="middle" className="fill-red-600 text-lg font-bold">
+          🏥 ZONA DE RECUPERACIÓN 🏥
+        </text>
+
+        {/* Líneas de separación entre espacios */}
+        <line x1="180" y1="50" x2="180" y2="90" stroke="#999" strokeWidth="1" strokeDasharray="2,2" />
+        <line x1="320" y1="50" x2="320" y2="90" stroke="#999" strokeWidth="1" strokeDasharray="2,2" />
+        <line x1="180" y1="210" x2="180" y2="250" stroke="#999" strokeWidth="1" strokeDasharray="2,2" />
+        <line x1="320" y1="210" x2="320" y2="250" stroke="#999" strokeWidth="1" strokeDasharray="2,2" />
+      </svg>
+
+      {/* Contenedor de jugadoras */}
+      <div className={`absolute inset-0 ${isSpinning ? "animate-pulse" : ""}`}>{children}</div>
     </div>
   )
 }

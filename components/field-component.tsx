@@ -4,52 +4,47 @@ import type { ReactNode } from "react"
 
 interface FieldComponentProps {
   children: ReactNode
-  isSpinning: boolean
+  isSpinning?: boolean
 }
 
-export function FieldComponent({ children, isSpinning }: FieldComponentProps) {
+export function FieldComponent({ children, isSpinning = false }: FieldComponentProps) {
   return (
     <div className="relative">
-      {/* Campo de vóley realista - 9x9 metros (mi lado del campo) */}
-      <div
-        className={`relative bg-gradient-to-b from-orange-200 to-orange-300 border-4 border-orange-600 rounded-lg shadow-lg transition-all duration-500 ${
-          isSpinning ? "animate-pulse" : ""
-        }`}
-        style={{
-          width: "450px", // 9 metros de ancho
-          height: "450px", // 9 metros de largo
-          padding: "20px",
-        }}
+      {/* Campo de volleyball */}
+      <svg
+        width="450"
+        height="360"
+        viewBox="0 0 450 360"
+        className="border-2 border-green-600 rounded-lg bg-gradient-to-b from-green-400 to-green-500 shadow-lg"
       >
-        {/* Superficie del campo con textura */}
-        <div className="absolute inset-4 bg-gradient-to-br from-orange-100 to-orange-200 rounded opacity-50"></div>
-
         {/* Líneas del campo */}
-        <div className="absolute inset-4">
-          {/* Red (parte superior del campo) */}
-          <div className="absolute top-0 left-0 right-0 h-2 bg-white border-t-4 border-black shadow-lg"></div>
-          <div className="absolute top-0 left-1/2 w-1 h-6 bg-gray-800 transform -translate-x-1/2 -translate-y-2"></div>
+        {/* Línea central */}
+        <line x1="225" y1="20" x2="225" y2="340" stroke="white" strokeWidth="3" />
 
-          {/* Línea de ataque (3 metros de la red) */}
-          <div
-            className="absolute left-0 right-0 h-1 bg-white shadow-sm"
-            style={{ top: "33.33%" }} // 3 metros de 9 metros = 33.33%
-          ></div>
+        {/* Líneas de ataque */}
+        <line x1="20" y1="110" x2="430" y2="110" stroke="white" strokeWidth="2" strokeDasharray="5,5" />
+        <line x1="20" y1="250" x2="430" y2="250" stroke="white" strokeWidth="2" strokeDasharray="5,5" />
 
-          {/* Línea de fondo (línea de saque) */}
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-white shadow-sm"></div>
+        {/* Líneas laterales */}
+        <line x1="20" y1="20" x2="430" y2="20" stroke="white" strokeWidth="3" />
+        <line x1="20" y1="340" x2="430" y2="340" stroke="white" strokeWidth="3" />
+        <line x1="20" y1="20" x2="20" y2="340" stroke="white" strokeWidth="3" />
+        <line x1="430" y1="20" x2="430" y2="340" stroke="white" strokeWidth="3" />
 
-          {/* Líneas laterales */}
-          <div className="absolute top-0 bottom-0 left-0 w-1 bg-white shadow-sm"></div>
-          <div className="absolute top-0 bottom-0 right-0 w-1 bg-white shadow-sm"></div>
+        {/* Red */}
+        <rect x="220" y="15" width="10" height="330" fill="rgba(139, 69, 19, 0.8)" />
+        <rect x="215" y="10" width="20" height="10" fill="rgba(139, 69, 19, 0.9)" />
 
-          {/* Línea central (opcional, para referencia) */}
-          <div className="absolute top-0 bottom-0 left-1/2 w-0.5 bg-white/30 transform -translate-x-1/2"></div>
-        </div>
+        {/* Círculo central */}
+        <circle cx="225" cy="180" r="30" fill="none" stroke="white" strokeWidth="2" />
 
-        {/* Contenedor de jugadoras */}
-        <div className="relative z-10 h-full">{children}</div>
-      </div>
+        {/* Zonas de saque */}
+        <rect x="425" y="160" width="20" height="40" fill="rgba(255,255,255,0.3)" />
+        <rect x="5" y="160" width="20" height="40" fill="rgba(255,255,255,0.3)" />
+      </svg>
+
+      {/* Contenedor de jugadoras */}
+      <div className={`absolute inset-0 ${isSpinning ? "animate-pulse" : ""}`}>{children}</div>
     </div>
   )
 }

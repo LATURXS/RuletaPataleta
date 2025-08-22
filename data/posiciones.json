@@ -1,8 +1,8 @@
 {
-  "1": "Punta",
-  "2": "Opuesta",
-  "3": "Central",
-  "4": "Punta",
-  "5": "Colocadora",
-  "6": "Líbero"
+  "pos1": "Colocadora",
+  "pos2": "Opuesta",
+  "pos3": "Central",
+  "pos4": "Punta",
+  "pos5": "Líbero",
+  "pos6": "Universal"
 }

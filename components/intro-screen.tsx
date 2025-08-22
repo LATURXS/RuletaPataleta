@@ -1,45 +1,53 @@
 "use client"
 
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+
 interface IntroScreenProps {
   onComplete: () => void
 }
 
 export function IntroScreen({ onComplete }: IntroScreenProps) {
+  const [isAnimating, setIsAnimating] = useState(false)
+
+  const handleStart = () => {
+    setIsAnimating(true)
+    setTimeout(() => {
+      onComplete()
+    }, 1000)
+  }
+
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-green-400 via-green-500 to-green-600 flex items-center justify-center z-50 p-4">
-      <div className="max-w-3xl mx-auto text-center">
-        {/* Pelota como botón de inicio con texto JUGAR */}
-        <div className="mb-8">
-          <button
-            onClick={onComplete}
-            className="relative animate-bounce hover:scale-110 transition-all duration-300 cursor-pointer focus:outline-none focus:ring-4 focus:ring-white/50 rounded-full p-4"
-            aria-label="Iniciar juego"
-          >
-            <div className="relative">
-              <span className="text-9xl">🏐</span>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-lg font-bold text-white bg-black/70 px-3 py-1 rounded-full shadow-lg">JUGAR</span>
-              </div>
-            </div>
-          </button>
+    <div
+      className={`min-h-screen bg-gradient-to-br from-green-400 via-blue-500 to-purple-600 flex items-center justify-center transition-all duration-1000 ${isAnimating ? "scale-110 opacity-0" : "scale-100 opacity-100"}`}
+    >
+      <div className="text-center space-y-8 p-8 bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/20">
+        {/* Logo/Título */}
+        <div className="space-y-4">
+          <div className="text-8xl animate-bounce">🏐</div>
+          <h1 className="text-6xl font-bold text-white drop-shadow-lg">LA RULETA</h1>
+          <h2 className="text-4xl font-bold text-yellow-300 drop-shadow-lg">PATALETA</h2>
         </div>
 
-        {/* Título en una línea */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 animate-pulse whitespace-nowrap">
-          🎯 LA RULETA PATALETA
-        </h1>
+        {/* Descripción */}
+        <div className="space-y-3 text-white/90">
+          <p className="text-xl font-medium">🎯 El juego que decide quién juega y quién se queda en el banquillo</p>
+          <p className="text-lg">Sube las fotos de tus jugadoras y deja que la suerte decida</p>
+        </div>
 
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 md:p-8 shadow-2xl">
-          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-green-800 mb-4 md:mb-6">
-            ¿Cómo está el equipo para el próximo partido?
-          </h2>
+        {/* Botón de inicio */}
+        <Button
+          onClick={handleStart}
+          className="bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white font-bold px-12 py-4 rounded-full text-2xl shadow-lg transform hover:scale-105 transition-all duration-200 animate-pulse"
+        >
+          🚀 JUAGAR
+        </Button>
 
-          <p className="text-base md:text-lg lg:text-xl text-gray-700 leading-relaxed mb-4">
-            Sube las fotos de tus jugadoras (con sus nombres), y gira la ruleta para saber quién sale al campo y quién
-            se queda regando las plantitas.
-          </p>
-
-          <p className="text-xl md:text-2xl font-bold text-green-600 animate-pulse">¡Juas, juas, juas...! 😂</p>
+        {/* Instrucciones */}
+        <div className="text-sm text-white/70 space-y-1">
+          <p>• Sube fotos de tus jugadoras</p>
+          <p>• La ruleta decidirá quién está sana y quién está "tulli"</p>
+          <p>• ¡Que la suerte esté de tu lado! 🍀</p>
         </div>
       </div>
     </div>
