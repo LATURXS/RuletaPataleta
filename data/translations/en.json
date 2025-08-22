@@ -1,0 +1,41 @@
+{
+  "app": {
+    "title": "🎯 THE TANTRUM ROULETTE",
+    "share": "Share",
+    "shareMessage": "Play with us The Tantrum Roulette! 🏐",
+    "linkCopied": "Link copied! Share it with your friends 🏐"
+  },
+  "intro": {
+    "play": "PLAY",
+    "title": "🎯 THE TANTRUM ROULETTE",
+    "subtitle": "How's the team for the next match?",
+    "description": "Upload your players' photos (with their names), and spin the roulette to know who goes to the court and who stays watering the plants.",
+    "funnyText": "Ha, ha, ha...! 😂"
+  },
+  "photoUploader": {
+    "title": "📸 Upload Your Players' Photos",
+    "description": "Upload between 2 and 16 photos of your players. The file names will be used as player names.",
+    "photosInfo": "With {count} photos: {healthy} healthy, {injured} injured",
+    "randomSelection": "With {count} photos: 12 will be randomly selected to play (6 healthy, 6 injured)",
+    "selectPhotos": "SELECT PHOTOS",
+    "selectedPhotos": "Selected photos:",
+    "cancel": "Cancel",
+    "usePhotos": "USE THESE PHOTOS ({count})",
+    "minPhotosError": "You need to upload at least 2 photos to play",
+    "maxPhotosWarning": "You tried to upload more than 16 photos, only the first 16 selected photos will be uploaded.",
+    "uploadPhotos": "UPLOAD PHOTOS"
+  },
+  "game": {
+    "healthyTitle": "🏐 The Healthy Ones - On the Court",
+    "healthyCount": "Healthy players: {count}",
+    "positionsTitle": "⚡ Court Positions",
+    "injuredTitle": "🏥 The Injured Ones - Watering Plants on the Bench",
+    "injuredCount": "Injured players: {count}",
+    "injuriesTitle": "🏥 Injury Report"
+  },
+  "roulette": {
+    "spinning": "Spinning...",
+    "redistribute": "REDISTRIBUTE"
+  },
+  "defaultNames": ["Rachel", "Rebecca", "Riley", "Ruby"]
+}

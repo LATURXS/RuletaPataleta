@@ -1,0 +1,41 @@
+{
+  "app": {
+    "title": "🎯 LA RULETA PATALETA",
+    "share": "Compartir",
+    "shareMessage": "Juga amb nosaltres a La Ruleta Pataleta! 🏐",
+    "linkCopied": "Enllaç copiat! Comparteix-lo amb les teves amigues 🏐"
+  },
+  "intro": {
+    "play": "JUGAR",
+    "title": "🎯 LA RULETA PATALETA",
+    "subtitle": "Com està l'equip per al proper partit?",
+    "description": "Puja les fotos de les teves jugadores (amb els seus noms), i gira la ruleta per saber qui surt al camp i qui es queda regant les plantetes.",
+    "funnyText": "Juas, juas, juas...! 😂"
+  },
+  "photoUploader": {
+    "title": "📸 Puja les Fotos de les teves Jugadores",
+    "description": "Puja entre 2 i 16 fotos de les teves jugadores. Els noms dels arxius s'utilitzaran com a noms de les jugadores.",
+    "photosInfo": "Amb {count} fotos: {healthy} sanes, {injured} tullis",
+    "randomSelection": "Amb {count} fotos: Se n'elegiran 12 a l'atzar per jugar (6 sanes, 6 tullis)",
+    "selectPhotos": "SELECCIONAR FOTOS",
+    "selectedPhotos": "Fotos seleccionades:",
+    "cancel": "Cancel·lar",
+    "usePhotos": "USAR AQUESTES FOTOS ({count})",
+    "minPhotosError": "Necessites pujar almenys 2 fotos per jugar",
+    "maxPhotosWarning": "Has intentat pujar més de 16 fotos, només es pujaran les primeres 16 fotos triades.",
+    "uploadPhotos": "PUJA LES FOTOS"
+  },
+  "game": {
+    "healthyTitle": "🏐 Les Sanes - Al Camp",
+    "healthyCount": "Jugadores sanes: {count}",
+    "positionsTitle": "⚡ Posicions al Camp",
+    "injuredTitle": "🏥 Les Tullis - Regant Plantetes al Banc",
+    "injuredCount": "Jugadores lesionades: {count}",
+    "injuriesTitle": "🏥 Part de Lesions"
+  },
+  "roulette": {
+    "spinning": "Girant...",
+    "redistribute": "REDISTRIBUIR"
+  },
+  "defaultNames": ["Raquel", "Rachel", "Queli", "Rak"]
+}

@@ -8,10 +8,10 @@ import { PhotoUploaderComponent } from "@/components/photo-uploader-component"
 import { IntroScreen } from "@/components/intro-screen"
 import { SpinningWheel } from "@/components/spinning-wheel"
 import { RouletteButton } from "@/components/roulette-button"
+import { LanguageSelector } from "@/components/language-selector"
 import { Button } from "@/components/ui/button"
 import { Camera, Share2 } from "lucide-react"
-import posicionesData from "@/data/posiciones.json"
-import lesionesData from "@/data/lesiones.json"
+import { useTranslation } from "@/contexts/language-context"
 
 export interface PlayerData {
   id: number
@@ -74,12 +74,16 @@ export default function VolleyballGame() {
   const [wheelSize, setWheelSize] = useState<"large" | "small">("large")
   const [playersAppearing, setPlayersAppearing] = useState(false)
 
+  const { t, getPositions, getInjuries } = useTranslation()
+
   const initializePlayers = useCallback(
     (photos?: { file: File; name: string }[]) => {
       const fieldPositions = getVolleyballPositions()
       const benchPositions = getBenchPositions()
-      const positionKeys = shuffleArray(Object.keys(posicionesData))
-      const injuryKeys = shuffleArray(Object.keys(lesionesData))
+      const positionsData = getPositions()
+      const injuriesData = getInjuries()
+      const positionKeys = shuffleArray(Object.keys(positionsData))
+      const injuryKeys = shuffleArray(Object.keys(injuriesData))
       const initialPlayers: PlayerData[] = []
 
       const playersData = photos || uploadedPhotos
@@ -113,7 +117,7 @@ export default function VolleyballGame() {
             faceImage: `uploaded_${originalIndex}`,
             isHealthy: true,
             position: fieldPositions[i],
-            positionName: posicionesData[positionKey as keyof typeof posicionesData],
+            positionName: positionsData[positionKey as keyof typeof positionsData],
             isVisible: false,
           })
         }
@@ -129,14 +133,14 @@ export default function VolleyballGame() {
             faceImage: `uploaded_${originalIndex}`,
             isHealthy: false,
             position: benchPositions[i - healthyCount],
-            injury: lesionesData[injuryKey as keyof typeof lesionesData],
+            injury: injuriesData[injuryKey as keyof typeof injuriesData],
             isVisible: false,
           })
         }
 
         // Si hay menos de 12 fotos, completar con jugadoras por defecto
         const totalPlayers = initialPlayers.length
-        const defaultNames = ["Raquel", "Rachel", "Queli", "Rak"]
+        const defaultNames = t("defaultNames") as string[]
 
         // Completar sanas hasta 6 si es necesario
         for (let i = healthyCount; i < 6 && totalPlayers + (i - healthyCount) < 12; i++) {
@@ -147,7 +151,7 @@ export default function VolleyballGame() {
             faceImage: `default_${totalPlayers + (i - healthyCount) + 1}`,
             isHealthy: true,
             position: fieldPositions[i],
-            positionName: posicionesData[positionKey as keyof typeof posicionesData],
+            positionName: positionsData[positionKey as keyof typeof positionsData],
             isVisible: false,
           })
         }
@@ -162,13 +166,13 @@ export default function VolleyballGame() {
             faceImage: `default_${i + 1}`,
             isHealthy: false,
             position: benchPositions[i - 6],
-            injury: lesionesData[injuryKey as keyof typeof lesionesData],
+            injury: injuriesData[injuryKey as keyof typeof injuriesData],
             isVisible: false,
           })
         }
       } else {
         // Sin fotos: usar nombres por defecto
-        const defaultNames = ["Raquel", "Rachel", "Queli", "Rak"]
+        const defaultNames = t("defaultNames") as string[]
         const repeatedNames = []
         for (let i = 0; i < 12; i++) {
           repeatedNames.push(defaultNames[i % 4])
@@ -182,7 +186,7 @@ export default function VolleyballGame() {
             faceImage: `default_${i + 1}`,
             isHealthy: true,
             position: fieldPositions[i],
-            positionName: posicionesData[positionKey as keyof typeof posicionesData],
+            positionName: positionsData[positionKey as keyof typeof positionsData],
             isVisible: false,
           })
         }
@@ -195,7 +199,7 @@ export default function VolleyballGame() {
             faceImage: `default_${i + 1}`,
             isHealthy: false,
             position: benchPositions[i - 6],
-            injury: lesionesData[injuryKey as keyof typeof lesionesData],
+            injury: injuriesData[injuryKey as keyof typeof injuriesData],
             isVisible: false,
           })
         }
@@ -203,7 +207,7 @@ export default function VolleyballGame() {
 
       setPlayers(initialPlayers)
     },
-    [uploadedPhotos],
+    [uploadedPhotos, getPositions, getInjuries, t],
   )
 
   // Animación de aparición de jugadoras - memoizada para evitar recreación
@@ -273,15 +277,15 @@ export default function VolleyballGame() {
   const shareApp = useCallback(() => {
     if (navigator.share) {
       navigator.share({
-        title: "LA RULETA PATALETA",
-        text: "¡Juega con nosotras a La Ruleta Pataleta! 🏐",
+        title: t("app.title"),
+        text: t("app.shareMessage"),
         url: window.location.href,
       })
     } else {
       navigator.clipboard.writeText(window.location.href)
-      alert("¡Enlace copiado! Compártelo con tus amigas 🏐")
+      alert(t("app.linkCopied"))
     }
-  }, [])
+  }, [t])
 
   // Memoizar los jugadores filtrados
   const healthyPlayers = useMemo(() => players.filter((p) => p.isHealthy), [players])
@@ -298,7 +302,7 @@ export default function VolleyballGame() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-4">
-              <h1 className="text-2xl sm:text-4xl font-bold text-green-800">🎯 LA RULETA PATALETA</h1>
+              <h1 className="text-2xl sm:text-4xl font-bold text-green-800">{t("app.title")}</h1>
               {showWheel && wheelSize === "small" && (
                 <SpinningWheel
                   isSpinning={false}
@@ -308,17 +312,18 @@ export default function VolleyballGame() {
                 />
               )}
             </div>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
+              <LanguageSelector />
               <Button
                 onClick={() => setShowUploader(true)}
                 className="bg-blue-800 hover:bg-blue-900 text-white font-bold px-6 py-3 rounded-2xl shadow-lg animate-pulse"
               >
                 <Camera className="h-4 w-4 mr-2" />
-                SUBE LAS FOTOS
+                {t("photoUploader.uploadPhotos")}
               </Button>
               <Button onClick={shareApp} variant="outline" className="rounded-2xl bg-transparent">
                 <Share2 className="h-4 w-4 mr-2" />
-                Compartir
+                {t("app.share")}
               </Button>
             </div>
           </div>
@@ -337,9 +342,7 @@ export default function VolleyballGame() {
         <div className="space-y-8">
           {/* 1. Campo con jugadoras sanas */}
           <div className="bg-white rounded-2xl shadow-xl p-6">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-green-700 text-center">
-              🏐 Las Sanas - En el Campo
-            </h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-green-700 text-center">{t("game.healthyTitle")}</h2>
             <div className="flex justify-center">
               <FieldComponent isSpinning={playersAppearing}>
                 {healthyPlayers.map((player) => (
@@ -353,13 +356,15 @@ export default function VolleyballGame() {
                 ))}
               </FieldComponent>
             </div>
-            <div className="mt-4 text-center text-gray-600">Jugadoras sanas: {healthyPlayers.length}</div>
+            <div className="mt-4 text-center text-gray-600">
+              {t("game.healthyCount", { count: healthyPlayers.length })}
+            </div>
           </div>
 
           {/* 2. Lista de posiciones */}
           <div className="bg-white rounded-2xl shadow-xl p-4">
             <h2 className="text-xl font-bold mb-4 text-green-700 text-center flex items-center justify-center gap-2">
-              ⚡ Posiciones en Campo
+              {t("game.positionsTitle")}
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
               {healthyPlayers.map((player) => (
@@ -375,9 +380,7 @@ export default function VolleyballGame() {
 
           {/* 3. Banquillo con jugadoras lesionadas */}
           <div className="bg-white rounded-2xl shadow-xl p-6">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-red-700 text-center">
-              🏥 Las Tullis - Regando Plantitas en el Banquillo
-            </h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-red-700 text-center">{t("game.injuredTitle")}</h2>
             <div className="flex justify-center">
               <ImprovedBench isSpinning={playersAppearing}>
                 {injuredPlayers.map((player) => (
@@ -391,13 +394,15 @@ export default function VolleyballGame() {
                 ))}
               </ImprovedBench>
             </div>
-            <div className="mt-4 text-center text-gray-600">Jugadoras lesionadas: {injuredPlayers.length}</div>
+            <div className="mt-4 text-center text-gray-600">
+              {t("game.injuredCount", { count: injuredPlayers.length })}
+            </div>
           </div>
 
           {/* 4. Lista de lesiones */}
           <div className="bg-white rounded-2xl shadow-xl p-4">
             <h2 className="text-xl font-bold mb-4 text-red-700 text-center flex items-center justify-center gap-2">
-              🏥 Parte de Lesiones
+              {t("game.injuriesTitle")}
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
               {injuredPlayers.map((player) => (

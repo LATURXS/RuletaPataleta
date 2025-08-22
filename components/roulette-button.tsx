@@ -1,5 +1,7 @@
 "use client"
 
+import { useTranslation } from "@/contexts/language-context"
+
 interface RouletteButtonProps {
   onClick: () => void
   disabled: boolean
@@ -7,6 +9,8 @@ interface RouletteButtonProps {
 }
 
 export function RouletteButton({ onClick, disabled, isSpinning }: RouletteButtonProps) {
+  const { t } = useTranslation()
+
   return (
     <button
       onClick={onClick}
@@ -57,7 +61,9 @@ export function RouletteButton({ onClick, disabled, isSpinning }: RouletteButton
 
       {/* Texto */}
       <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-center">
-        <span className="text-sm font-bold text-gray-700">{isSpinning ? "Girando..." : "REDISTRIBUIR"}</span>
+        <span className="text-sm font-bold text-gray-700">
+          {isSpinning ? t("roulette.spinning") : t("roulette.redistribute")}
+        </span>
       </div>
     </button>
   )
