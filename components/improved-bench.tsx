@@ -1,68 +1,49 @@
 "use client"
 
-import type { ReactNode } from "react"
+import type React from "react"
 
 interface ImprovedBenchProps {
-  children: ReactNode
+  children: React.ReactNode
   isSpinning?: boolean
 }
 
-export function ImprovedBench({ children, isSpinning = false }: ImprovedBenchProps) {
+export function ImprovedBench({ children, isSpinning }: ImprovedBenchProps) {
   return (
-    <div className={`relative bench-container ${isSpinning ? "animate-pulse" : ""}`}>
+    <div className="relative">
       {/* Área del banquillo */}
-      <div className="relative w-[500px] h-[320px] bg-gradient-to-br from-green-100 to-green-200 rounded-xl shadow-2xl border-4 border-green-300 overflow-hidden">
-        {/* Fondo decorativo */}
-        <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 to-green-100/50" />
-
-        {/* Bancos de madera - 2 bancos horizontales */}
-
+      <div className="relative bg-gradient-to-b from-amber-600 to-amber-800 rounded-2xl shadow-2xl p-8 min-h-[320px] border-4 border-amber-900">
         {/* Banco superior */}
-        <div className="absolute top-16 left-8 right-8 h-12 bg-gradient-to-b from-amber-600 to-amber-800 rounded-lg shadow-xl border-2 border-amber-700">
-          {/* Vetas de la madera */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-700/20 to-transparent rounded-lg" />
-          <div className="absolute top-1 left-2 right-2 h-1 bg-amber-500/30 rounded-full" />
-          <div className="absolute bottom-1 left-2 right-2 h-1 bg-amber-900/30 rounded-full" />
-
-          {/* Patas del banco */}
-          <div className="absolute -bottom-4 left-4 w-3 h-4 bg-amber-700 rounded-b" />
-          <div className="absolute -bottom-4 right-4 w-3 h-4 bg-amber-700 rounded-b" />
+        <div className="absolute top-6 left-6 right-6 h-16 bg-gradient-to-b from-amber-700 to-amber-900 rounded-lg shadow-inner border-2 border-amber-800">
+          <div className="absolute inset-x-4 top-2 h-2 bg-amber-600 rounded-full opacity-60"></div>
+          <div className="absolute inset-x-4 bottom-2 h-2 bg-amber-900 rounded-full opacity-40"></div>
         </div>
 
         {/* Banco inferior */}
-        <div className="absolute bottom-16 left-8 right-8 h-12 bg-gradient-to-b from-amber-600 to-amber-800 rounded-lg shadow-xl border-2 border-amber-700">
-          {/* Vetas de la madera */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-700/20 to-transparent rounded-lg" />
-          <div className="absolute top-1 left-2 right-2 h-1 bg-amber-500/30 rounded-full" />
-          <div className="absolute bottom-1 left-2 right-2 h-1 bg-amber-900/30 rounded-full" />
-
-          {/* Patas del banco */}
-          <div className="absolute -bottom-4 left-4 w-3 h-4 bg-amber-700 rounded-b" />
-          <div className="absolute -bottom-4 right-4 w-3 h-4 bg-amber-700 rounded-b" />
-        </div>
-
-        {/* Decoraciones del banquillo */}
-        <div className="absolute top-2 left-4 text-green-700 font-bold text-sm opacity-70">BANQUILLO TULLIS</div>
-
-        {/* Plantas decorativas */}
-        <div className="absolute bottom-2 left-2 text-2xl decoration-bounce">🌱</div>
-        <div className="absolute bottom-2 right-2 text-2xl decoration-bounce" style={{ animationDelay: "0.5s" }}>
-          🌿
-        </div>
-        <div className="absolute top-2 right-2 text-2xl decoration-bounce" style={{ animationDelay: "1s" }}>
-          🍃
-        </div>
-
-        {/* Regadera decorativa */}
-        <div
-          className="absolute top-4 left-1/2 transform -translate-x-1/2 text-xl decoration-bounce"
-          style={{ animationDelay: "1.5s" }}
-        >
-          🪴
+        <div className="absolute bottom-6 left-6 right-6 h-16 bg-gradient-to-b from-amber-700 to-amber-900 rounded-lg shadow-inner border-2 border-amber-800">
+          <div className="absolute inset-x-4 top-2 h-2 bg-amber-600 rounded-full opacity-60"></div>
+          <div className="absolute inset-x-4 bottom-2 h-2 bg-amber-900 rounded-full opacity-40"></div>
         </div>
 
         {/* Jugadoras lesionadas */}
-        <div className="absolute inset-0">{children}</div>
+        <div className="relative h-full flex items-center justify-center z-10">
+          <div className="w-full h-full relative">{children}</div>
+        </div>
+
+        {/* Decoraciones */}
+        <div className="absolute -top-3 left-8 text-2xl">🪑</div>
+        <div className="absolute -top-3 right-8 text-2xl">🪑</div>
+        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-sm text-gray-700 font-bold bg-white px-3 py-1 rounded-full shadow-lg">
+          Banquillo de las Tullis
+        </div>
+
+        {/* Plantas decorativas */}
+        <div className="absolute top-2 left-2 text-green-500 text-lg opacity-70">🌱</div>
+        <div className="absolute top-2 right-2 text-green-500 text-lg opacity-70">🌿</div>
+        <div className="absolute bottom-2 left-2 text-green-500 text-lg opacity-70">🍀</div>
+        <div className="absolute bottom-2 right-2 text-green-500 text-lg opacity-70">🌺</div>
+
+        {/* Regadera */}
+        <div className="absolute top-1/2 -right-8 transform -translate-y-1/2 text-3xl opacity-60">🪴</div>
       </div>
     </div>
   )

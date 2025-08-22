@@ -7,12 +7,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Upload, X, ImageIcon } from "lucide-react"
 
-interface PhotoUploaderComponentProps {
+interface PhotoUploaderProps {
   onPhotosUploaded: (photos: { file: File; name: string }[]) => void
   onClose: () => void
 }
 
-export function PhotoUploaderComponent({ onPhotosUploaded, onClose }: PhotoUploaderComponentProps) {
+export function PhotoUploader({ onPhotosUploaded, onClose }: PhotoUploaderProps) {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [previews, setPreviews] = useState<string[]>([])
 
@@ -48,18 +48,18 @@ export function PhotoUploaderComponent({ onPhotosUploaded, onClose }: PhotoUploa
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
-        <CardHeader className="bg-gradient-to-r from-pink-500 to-purple-600 text-white">
+      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <CardHeader>
           <div className="flex justify-between items-center">
-            <CardTitle className="text-2xl font-bold">📸 Subir Fotos de Jugadoras</CardTitle>
-            <Button variant="ghost" size="sm" onClick={onClose} className="text-white hover:bg-white/20">
+            <CardTitle className="text-2xl font-bold text-green-700">📸 Subir Fotos de Jugadoras</CardTitle>
+            <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="h-4 w-4" />
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6 p-6">
+        <CardContent className="space-y-6">
           {/* Área de subida */}
-          <div className="border-2 border-dashed border-pink-300 rounded-lg p-8 text-center bg-gradient-to-br from-pink-50 to-purple-50">
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
             <input
               type="file"
               multiple
@@ -69,27 +69,27 @@ export function PhotoUploaderComponent({ onPhotosUploaded, onClose }: PhotoUploa
               id="photo-upload"
             />
             <label htmlFor="photo-upload" className="cursor-pointer">
-              <Upload className="h-12 w-12 text-pink-400 mx-auto mb-4" />
+              <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <p className="text-lg font-medium text-gray-700 mb-2">Haz clic para seleccionar fotos</p>
-              <p className="text-sm text-gray-500">Puedes subir múltiples fotos a la vez (máximo 12)</p>
+              <p className="text-sm text-gray-500">Puedes subir múltiples fotos a la vez</p>
             </label>
           </div>
 
           {/* Previews */}
           {previews.length > 0 && (
             <div>
-              <h3 className="text-lg font-semibold mb-4 text-purple-700">Fotos seleccionadas ({previews.length})</h3>
+              <h3 className="text-lg font-semibold mb-4">Fotos seleccionadas ({previews.length})</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {previews.map((preview, index) => (
                   <div key={index} className="relative group">
                     <img
                       src={preview || "/placeholder.svg"}
                       alt={`Preview ${index + 1}`}
-                      className="w-full h-24 object-cover rounded-lg border-2 border-pink-200"
+                      className="w-full h-24 object-cover rounded-lg"
                     />
                     <button
                       onClick={() => removeFile(index)}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       ×
                     </button>
@@ -102,29 +102,18 @@ export function PhotoUploaderComponent({ onPhotosUploaded, onClose }: PhotoUploa
             </div>
           )}
 
-          {/* Información */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-semibold text-blue-800 mb-2">ℹ️ Información:</h4>
-            <ul className="text-sm text-blue-700 space-y-1">
-              <li>• Máximo 6 jugadoras irán al campo</li>
-              <li>• El resto irán al banquillo como "tullis"</li>
-              <li>• Si subes más de 12 fotos, se seleccionarán 12 al azar</li>
-              <li>• Los nombres se extraen del nombre del archivo</li>
-            </ul>
-          </div>
-
           {/* Botones */}
           <div className="flex gap-4 justify-end">
-            <Button variant="outline" onClick={onClose} className="border-gray-300 bg-transparent">
+            <Button variant="outline" onClick={onClose}>
               Cancelar
             </Button>
             <Button
               onClick={handleUpload}
               disabled={selectedFiles.length === 0}
-              className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white"
+              className="bg-green-600 hover:bg-green-700"
             >
               <ImageIcon className="h-4 w-4 mr-2" />
-              ¡Usar Fotos! ({selectedFiles.length})
+              Usar Fotos ({selectedFiles.length})
             </Button>
           </div>
         </CardContent>
