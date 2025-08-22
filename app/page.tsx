@@ -9,7 +9,7 @@ import { IntroScreen } from "@/components/intro-screen"
 import { SpinningWheel } from "@/components/spinning-wheel"
 import { RouletteButton } from "@/components/roulette-button"
 import { Button } from "@/components/ui/button"
-import { Camera, Share2, RotateCcw } from "lucide-react"
+import { Camera, Share2 } from "lucide-react"
 import posicionesData from "@/data/posiciones.json"
 import lesionesData from "@/data/lesiones.json"
 
@@ -280,15 +280,6 @@ export default function VolleyballGame() {
     }
   }, [])
 
-  const handleRestart = useCallback(() => {
-    setIsFirstTime(true)
-    setUploadedPhotos([])
-    setPhotoUrls({})
-    setPlayers([])
-    setShowWheel(false)
-    initializePlayers()
-  }, [initializePlayers])
-
   // Memoizar los jugadores filtrados
   const healthyPlayers = useMemo(() => players.filter((p) => p.isHealthy), [players])
   const injuredPlayers = useMemo(() => players.filter((p) => !p.isHealthy), [players])
@@ -322,31 +313,19 @@ export default function VolleyballGame() {
                   onClick={() => setShowUploader(true)}
                   className="animate-pulse-pink text-white font-bold px-6 py-3 rounded-2xl shadow-lg border-0"
                 >
-                  <Camera className="h-4 w-4 mr-2" />📸 SUBE LAS FOTOS
+                  <Camera className="h-4 w-4 mr-2" />
+                  SUBE LAS FOTOS
                 </Button>
               ) : (
                 // SIGUIENTES VECES: Azul normal
                 <Button
                   onClick={() => setShowUploader(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-2xl shadow-lg"
+                  className="bg-blue-800 hover:bg-blue-900 text-white font-bold px-6 py-3 rounded-2xl shadow-lg"
                 >
                   <Camera className="h-4 w-4 mr-2" />
-                  CAMBIAR FOTOS
+                  SUBE LAS FOTOS
                 </Button>
               )}
-
-              {/* Botón de reiniciar - solo aparece cuando hay jugadoras */}
-              {uploadedPhotos.length > 0 && (
-                <Button
-                  onClick={handleRestart}
-                  variant="outline"
-                  className="rounded-2xl bg-transparent border-orange-500 text-orange-600 hover:bg-orange-50"
-                >
-                  <RotateCcw className="h-4 w-4 mr-2" />
-                  Reiniciar
-                </Button>
-              )}
-
               <Button onClick={shareApp} variant="outline" className="rounded-2xl bg-transparent">
                 <Share2 className="h-4 w-4 mr-2" />
                 Compartir
@@ -355,19 +334,6 @@ export default function VolleyballGame() {
           </div>
         </div>
       </div>
-
-      {/* Mensaje de guía cuando no hay fotos */}
-      {isFirstTime && uploadedPhotos.length === 0 && (
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="bg-gradient-to-r from-pink-100 to-purple-100 border border-pink-300 rounded-2xl p-6 text-center animate-fade-in-up">
-            <div className="text-4xl mb-2">👆</div>
-            <h3 className="text-xl font-bold text-pink-700 mb-2">¡Empieza subiendo las fotos!</h3>
-            <p className="text-pink-600">
-              Haz clic en el botón rosa que parpadea para subir las fotos de tus jugadoras y comenzar el juego
-            </p>
-          </div>
-        </div>
-      )}
 
       {/* Ruleta grande centrada */}
       {showWheel && wheelSize === "large" && (
@@ -379,107 +345,84 @@ export default function VolleyballGame() {
       {/* Contenido principal */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="space-y-8">
-          {/* Contador de jugadoras */}
-          {players.length > 0 && (
-            <div className="text-center">
-              <div className="inline-flex items-center gap-4 bg-white rounded-full px-6 py-3 shadow-lg">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <span className="font-bold text-green-700">{healthyPlayers.length} Sanas</span>
-                </div>
-                <div className="w-px h-6 bg-gray-300"></div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                  <span className="font-bold text-red-700">{injuredPlayers.length} Tullis</span>
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* 1. Campo con jugadoras sanas */}
-          {healthyPlayers.length > 0 && (
-            <div className="bg-white rounded-2xl shadow-xl p-6">
-              <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-green-700 text-center">
-                🏐 Las Sanas - En el Campo
-              </h2>
-              <div className="flex justify-center">
-                <FieldComponent isSpinning={playersAppearing}>
-                  {healthyPlayers.map((player) => (
-                    <PlayerComponent
-                      key={player.id}
-                      player={player}
-                      onClick={() => {}}
-                      isSpinning={playersAppearing}
-                      photoUrl={photoUrls[player.faceImage]}
-                    />
-                  ))}
-                </FieldComponent>
-              </div>
+          <div className="bg-white rounded-2xl shadow-xl p-6">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-green-700 text-center">
+              🏐 Las Sanas - En el Campo
+            </h2>
+            <div className="flex justify-center">
+              <FieldComponent isSpinning={playersAppearing}>
+                {healthyPlayers.map((player) => (
+                  <PlayerComponent
+                    key={player.id}
+                    player={player}
+                    onClick={() => {}}
+                    isSpinning={playersAppearing}
+                    photoUrl={photoUrls[player.faceImage]}
+                  />
+                ))}
+              </FieldComponent>
             </div>
-          )}
+            <div className="mt-4 text-center text-gray-600">Jugadoras sanas: {healthyPlayers.length}</div>
+          </div>
 
           {/* 2. Lista de posiciones */}
-          {healthyPlayers.length > 0 && (
-            <div className="bg-white rounded-2xl shadow-xl p-4">
-              <h2 className="text-xl font-bold mb-4 text-green-700 text-center flex items-center justify-center gap-2">
-                ⚡ Posiciones en Campo
-              </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-                {healthyPlayers.map((player) => (
-                  <div key={player.id} className="bg-green-50 rounded-lg p-2 border-l-2 border-green-500 text-center">
-                    <div className="font-bold text-green-800 text-sm">{player.name}</div>
-                    <div className="text-green-600 bg-green-100 px-1 py-0.5 rounded-full text-xs inline-block mt-1">
-                      {player.positionName}
-                    </div>
+          <div className="bg-white rounded-2xl shadow-xl p-4">
+            <h2 className="text-xl font-bold mb-4 text-green-700 text-center flex items-center justify-center gap-2">
+              ⚡ Posiciones en Campo
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+              {healthyPlayers.map((player) => (
+                <div key={player.id} className="bg-green-50 rounded-lg p-2 border-l-2 border-green-500 text-center">
+                  <div className="font-bold text-green-800 text-sm">{player.name}</div>
+                  <div className="text-green-600 bg-green-100 px-1 py-0.5 rounded-full text-xs inline-block mt-1">
+                    {player.positionName}
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
-          )}
+          </div>
 
           {/* 3. Banquillo con jugadoras lesionadas */}
-          {injuredPlayers.length > 0 && (
-            <div className="bg-white rounded-2xl shadow-xl p-6">
-              <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-red-700 text-center">
-                🏥 Las Tullis - Regando Plantitas en el Banquillo
-              </h2>
-              <div className="flex justify-center">
-                <ImprovedBench isSpinning={playersAppearing}>
-                  {injuredPlayers.map((player) => (
-                    <PlayerComponent
-                      key={player.id}
-                      player={player}
-                      onClick={() => {}}
-                      isSpinning={playersAppearing}
-                      photoUrl={photoUrls[player.faceImage]}
-                    />
-                  ))}
-                </ImprovedBench>
-              </div>
+          <div className="bg-white rounded-2xl shadow-xl p-6">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-red-700 text-center">
+              🏥 Las Tullis - Regando Plantitas en el Banquillo
+            </h2>
+            <div className="flex justify-center">
+              <ImprovedBench isSpinning={playersAppearing}>
+                {injuredPlayers.map((player) => (
+                  <PlayerComponent
+                    key={player.id}
+                    player={player}
+                    onClick={() => {}}
+                    isSpinning={playersAppearing}
+                    photoUrl={photoUrls[player.faceImage]}
+                  />
+                ))}
+              </ImprovedBench>
             </div>
-          )}
+            <div className="mt-4 text-center text-gray-600">Jugadoras lesionadas: {injuredPlayers.length}</div>
+          </div>
 
           {/* 4. Lista de lesiones */}
-          {injuredPlayers.length > 0 && (
-            <div className="bg-white rounded-2xl shadow-xl p-4">
-              <h2 className="text-xl font-bold mb-4 text-red-700 text-center flex items-center justify-center gap-2">
-                🏥 Parte de Lesiones
-              </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-                {injuredPlayers.map((player) => (
-                  <div key={player.id} className="bg-red-50 rounded-lg p-2 border-l-2 border-red-500 text-center">
-                    <div className="font-bold text-red-800 text-sm">{player.name}</div>
-                    <div className="text-red-600 bg-red-100 px-1 py-0.5 rounded-full text-xs inline-block mt-1">
-                      {player.injury}
-                    </div>
+          <div className="bg-white rounded-2xl shadow-xl p-4">
+            <h2 className="text-xl font-bold mb-4 text-red-700 text-center flex items-center justify-center gap-2">
+              🏥 Parte de Lesiones
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+              {injuredPlayers.map((player) => (
+                <div key={player.id} className="bg-red-50 rounded-lg p-2 border-l-2 border-red-500 text-center">
+                  <div className="font-bold text-red-800 text-sm">{player.name}</div>
+                  <div className="text-red-600 bg-red-100 px-1 py-0.5 rounded-full text-xs inline-block mt-1">
+                    {player.injury}
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
-          )}
+          </div>
 
           {/* Botón de redistribuir como ruleta */}
-          {(!showWheel || wheelSize === "small") && players.length > 0 && (
+          {(!showWheel || wheelSize === "small") && (
             <div className="text-center">
               <RouletteButton
                 onClick={handleSpin}

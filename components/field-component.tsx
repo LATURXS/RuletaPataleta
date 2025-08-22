@@ -9,42 +9,58 @@ interface FieldComponentProps {
 
 export function FieldComponent({ children, isSpinning = false }: FieldComponentProps) {
   return (
-    <div className="relative">
-      {/* Campo de volleyball */}
-      <svg
-        width="450"
-        height="360"
-        viewBox="0 0 450 360"
-        className="border-2 border-green-600 rounded-lg bg-gradient-to-b from-green-400 to-green-500 shadow-lg"
-      >
+    <div className={`relative field-container ${isSpinning ? "animate-pulse" : ""}`}>
+      {/* Campo de volleyball realista */}
+      <div className="relative w-[450px] h-[360px] bg-gradient-to-br from-orange-200 to-orange-300 rounded-lg shadow-2xl border-4 border-white overflow-hidden">
         {/* Líneas del campo */}
-        {/* Línea central */}
-        <line x1="225" y1="20" x2="225" y2="340" stroke="white" strokeWidth="3" />
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 450 360">
+          {/* Línea central (red) */}
+          <line x1="225" y1="0" x2="225" y2="360" stroke="white" strokeWidth="4" />
 
-        {/* Líneas de ataque */}
-        <line x1="20" y1="110" x2="430" y2="110" stroke="white" strokeWidth="2" strokeDasharray="5,5" />
-        <line x1="20" y1="250" x2="430" y2="250" stroke="white" strokeWidth="2" strokeDasharray="5,5" />
+          {/* Líneas laterales */}
+          <line x1="0" y1="0" x2="450" y2="0" stroke="white" strokeWidth="3" />
+          <line x1="0" y1="360" x2="450" y2="360" stroke="white" strokeWidth="3" />
+          <line x1="0" y1="0" x2="0" y2="360" stroke="white" strokeWidth="3" />
+          <line x1="450" y1="0" x2="450" y2="360" stroke="white" strokeWidth="3" />
 
-        {/* Líneas laterales */}
-        <line x1="20" y1="20" x2="430" y2="20" stroke="white" strokeWidth="3" />
-        <line x1="20" y1="340" x2="430" y2="340" stroke="white" strokeWidth="3" />
-        <line x1="20" y1="20" x2="20" y2="340" stroke="white" strokeWidth="3" />
-        <line x1="430" y1="20" x2="430" y2="340" stroke="white" strokeWidth="3" />
+          {/* Líneas de ataque (3 metros de la red) */}
+          <line x1="0" y1="108" x2="225" y2="108" stroke="white" strokeWidth="2" strokeDasharray="10,5" />
+          <line x1="225" y1="108" x2="450" y2="108" stroke="white" strokeWidth="2" strokeDasharray="10,5" />
+          <line x1="0" y1="252" x2="225" y2="252" stroke="white" strokeWidth="2" strokeDasharray="10,5" />
+          <line x1="225" y1="252" x2="450" y2="252" stroke="white" strokeWidth="2" strokeDasharray="10,5" />
 
-        {/* Red */}
-        <rect x="220" y="15" width="10" height="330" fill="rgba(139, 69, 19, 0.8)" />
-        <rect x="215" y="10" width="20" height="10" fill="rgba(139, 69, 19, 0.9)" />
+          {/* Círculos de saque */}
+          <circle cx="450" cy="180" r="8" fill="none" stroke="white" strokeWidth="2" />
+          <circle cx="0" cy="180" r="8" fill="none" stroke="white" strokeWidth="2" />
+        </svg>
 
-        {/* Círculo central */}
-        <circle cx="225" cy="180" r="30" fill="none" stroke="white" strokeWidth="2" />
+        {/* Red del volleyball */}
+        <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-gray-800 transform -translate-x-1/2 z-10">
+          {/* Postes de la red */}
+          <div className="absolute -top-4 left-1/2 w-2 h-4 bg-gray-700 transform -translate-x-1/2 rounded-t" />
+          <div className="absolute -bottom-4 left-1/2 w-2 h-4 bg-gray-700 transform -translate-x-1/2 rounded-b" />
 
-        {/* Zonas de saque */}
-        <rect x="425" y="160" width="20" height="40" fill="rgba(255,255,255,0.3)" />
-        <rect x="5" y="160" width="20" height="40" fill="rgba(255,255,255,0.3)" />
-      </svg>
+          {/* Malla de la red */}
+          <div
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-600 to-transparent opacity-30"
+            style={{
+              backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 8px, rgba(0,0,0,0.3) 8px, rgba(0,0,0,0.3) 10px),
+                                  repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(0,0,0,0.3) 8px, rgba(0,0,0,0.3) 10px)`,
+            }}
+          />
+        </div>
 
-      {/* Contenedor de jugadoras */}
-      <div className={`absolute inset-0 ${isSpinning ? "animate-pulse" : ""}`}>{children}</div>
+        {/* Decoraciones del campo */}
+        <div className="absolute top-2 left-2 text-orange-600 font-bold text-sm opacity-70">CAMPO PATALETA</div>
+
+        {/* Pelota decorativa */}
+        <div className="absolute top-4 right-4 w-6 h-6 bg-white rounded-full shadow-lg border-2 border-blue-500 decoration-bounce">
+          <div className="absolute inset-1 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full opacity-30" />
+        </div>
+
+        {/* Jugadoras */}
+        <div className="absolute inset-0">{children}</div>
+      </div>
     </div>
   )
 }
