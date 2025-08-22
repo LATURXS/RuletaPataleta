@@ -10,7 +10,6 @@ export function LanguageSelector() {
   const languages = [
     { code: "es" as const, name: "🇪🇸 ES", flag: "🇪🇸" },
     { code: "en" as const, name: "🇬🇧 EN", flag: "🇬🇧" },
-    { code: "ca" as const, name: "🏴󠁥󠁳󠁣󠁴󠁿 CA", flag: "🏴󠁥󠁳󠁣󠁴󠁿" },
   ]
 
   return (

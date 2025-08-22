@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 
-type Language = "es" | "en" | "ca"
+type Language = "es" | "en"
 
 interface LanguageContextType {
   language: Language
@@ -18,19 +18,16 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 const translations: Record<Language, any> = {
   es: {},
   en: {},
-  ca: {},
 }
 
 const positions: Record<Language, any> = {
   es: {},
   en: {},
-  ca: {},
 }
 
 const injuries: Record<Language, any> = {
   es: {},
   en: {},
-  ca: {},
 }
 
 // Función para interpolar parámetros en las traducciones
@@ -51,37 +48,31 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     const loadTranslations = async () => {
       try {
         // Cargar traducciones principales
-        const [esMain, enMain, caMain] = await Promise.all([
+        const [esMain, enMain] = await Promise.all([
           import("@/data/translations/es.json"),
           import("@/data/translations/en.json"),
-          import("@/data/translations/ca.json"),
         ])
 
         translations.es = esMain.default
         translations.en = enMain.default
-        translations.ca = caMain.default
 
         // Cargar posiciones
-        const [esPos, enPos, caPos] = await Promise.all([
+        const [esPos, enPos] = await Promise.all([
           import("@/data/translations/posiciones-es.json"),
           import("@/data/translations/posiciones-en.json"),
-          import("@/data/translations/posiciones-ca.json"),
         ])
 
         positions.es = esPos.default
         positions.en = enPos.default
-        positions.ca = caPos.default
 
         // Cargar lesiones
-        const [esInj, enInj, caInj] = await Promise.all([
+        const [esInj, enInj] = await Promise.all([
           import("@/data/translations/lesiones-es.json"),
           import("@/data/translations/lesiones-en.json"),
-          import("@/data/translations/lesiones-ca.json"),
         ])
 
         injuries.es = esInj.default
         injuries.en = enInj.default
-        injuries.ca = caInj.default
 
         setIsLoaded(true)
       } catch (error) {
