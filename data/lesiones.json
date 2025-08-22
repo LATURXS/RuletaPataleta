@@ -1,14 +1,8 @@
 {
-  "lesion1": "Dolor de cabeza por pensar mucho",
-  "lesion2": "Contractura por cargar la mochila",
-  "lesion3": "Esguince de tobillo bailando",
-  "lesion4": "Tendinitis por escribir WhatsApps",
-  "lesion5": "Lumbalgia por dormir mal",
-  "lesion6": "Tortícolis por mirar el móvil",
-  "lesion7": "Calambre por reírse mucho",
-  "lesion8": "Fatiga por trasnochar",
-  "lesion9": "Mareo por dar vueltas",
-  "lesion10": "Alergia al ejercicio matutino",
-  "lesion11": "Dolor de barriga por nervios",
-  "lesion12": "Resaca emocional del fin de semana"
+  "1": "Esguince",
+  "2": "Rodilla",
+  "3": "Lumbago",
+  "4": "Mano",
+  "5": "Migraña",
+  "6": "Me meo"
 }

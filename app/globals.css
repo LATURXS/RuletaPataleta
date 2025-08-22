@@ -123,83 +123,65 @@
   }
 }
 
-/* Animaciones personalizadas */
-@keyframes bounce-in {
-  0% {
-    transform: scale(0.3);
-    opacity: 0;
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
   }
-  50% {
-    transform: scale(1.05);
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-  70% {
-    transform: scale(0.9);
+}
+
+/* Mejoras para el responsive */
+@media (max-width: 640px) {
+  .field-container {
+    transform: scale(0.8);
   }
-  100% {
-    transform: scale(1);
+
+  .bench-container {
+    transform: scale(0.8);
+  }
+}
+
+/* Animaciones suaves para las jugadoras */
+.player-appear {
+  animation: playerAppear 0.5s ease-out forwards;
+  opacity: 0;
+  transform: scale(0) rotate(180deg);
+}
+
+@keyframes playerAppear {
+  to {
     opacity: 1;
+    transform: scale(1) rotate(0deg);
   }
 }
 
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  10%,
-  30%,
-  50%,
-  70%,
-  90% {
-    transform: translateX(-2px);
-  }
-  20%,
-  40%,
-  60%,
-  80% {
-    transform: translateX(2px);
-  }
+/* Efectos de hover mejorados */
+.player-card:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
-/* Animación de parpadeo rosa fucsia para primera vez */
-@keyframes pulse-pink {
+/* Decoraciones animadas */
+.decoration-bounce {
+  animation: decorationBounce 2s ease-in-out infinite;
+}
+
+@keyframes decorationBounce {
   0%,
   100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.7);
-    background-color: rgb(236, 72, 153);
+    transform: translateY(0px) rotate(0deg);
   }
   50% {
-    transform: scale(1.05);
-    box-shadow: 0 0 0 10px rgba(236, 72, 153, 0);
-    background-color: rgb(219, 39, 119);
+    transform: translateY(-10px) rotate(5deg);
   }
-}
-
-.animate-bounce-in {
-  animation: bounce-in 0.6s ease-out;
-}
-
-.animate-shake {
-  animation: shake 0.5s ease-in-out;
-}
-
-.animate-pulse-pink {
-  animation: pulse-pink 1.5s ease-in-out infinite;
-}
-
-/* Colores personalizados para madera */
-.bg-brown-600 {
-  background-color: #8b4513;
-}
-
-/* Efectos hover mejorados */
-.hover\:scale-110:hover {
-  transform: scale(1.1);
-}
-
-/* Transiciones suaves para todos los elementos */
-* {
-  transition-property: transform, opacity, background-color, border-color;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }

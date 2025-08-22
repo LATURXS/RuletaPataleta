@@ -2,10 +2,9 @@
 
 import type React from "react"
 
-import { useState, useCallback } from "react"
+import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Upload, X, ImageIcon } from "lucide-react"
+import { X, Upload, Check } from "lucide-react"
 
 interface PhotoUploaderComponentProps {
   onPhotosUploaded: (photos: { file: File; name: string }[]) => void
@@ -13,122 +12,114 @@ interface PhotoUploaderComponentProps {
 }
 
 export function PhotoUploaderComponent({ onPhotosUploaded, onClose }: PhotoUploaderComponentProps) {
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
-  const [previews, setPreviews] = useState<string[]>([])
+  const [selectedPhotos, setSelectedPhotos] = useState<{ file: File; name: string }[]>([])
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || [])
-    setSelectedFiles(files)
+    const photoData = files.map((file) => ({
+      file,
+      name: file.name.replace(/\.[^/.]+$/, ""), // Remover extensión
+    }))
+    setSelectedPhotos(photoData)
+  }
 
-    // Crear previews
-    const newPreviews = files.map((file) => URL.createObjectURL(file))
-    setPreviews(newPreviews)
-  }, [])
-
-  const handleUpload = useCallback(() => {
-    if (selectedFiles.length > 0) {
-      const photosWithNames = selectedFiles.map((file) => ({
-        file,
-        name: file.name.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " "),
-      }))
-      onPhotosUploaded(photosWithNames)
+  const handleUsePhotos = () => {
+    if (selectedPhotos.length > 0) {
+      onPhotosUploaded(selectedPhotos)
       onClose()
+    } else {
+      alert("Necesitas subir al menos 1 foto para jugar")
     }
-  }, [selectedFiles, onPhotosUploaded, onClose])
-
-  const removeFile = useCallback(
-    (index: number) => {
-      const newFiles = selectedFiles.filter((_, i) => i !== index)
-      const newPreviews = previews.filter((_, i) => i !== index)
-      setSelectedFiles(newFiles)
-      setPreviews(newPreviews)
-    },
-    [selectedFiles, previews],
-  )
+  }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
-        <CardHeader className="bg-gradient-to-r from-pink-500 to-purple-600 text-white">
-          <div className="flex justify-between items-center">
-            <CardTitle className="text-2xl font-bold">📸 Subir Fotos de Jugadoras</CardTitle>
-            <Button variant="ghost" size="sm" onClick={onClose} className="text-white hover:bg-white/20">
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6 p-6">
-          {/* Área de subida */}
-          <div className="border-2 border-dashed border-pink-300 rounded-lg p-8 text-center bg-gradient-to-br from-pink-50 to-purple-50">
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="flex justify-between items-center p-4 border-b">
+          <h2 className="text-xl font-bold text-gray-800">📸 Sube las Fotos de tus Jugadoras</h2>
+          <Button onClick={onClose} variant="ghost" size="sm">
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* Content */}
+        <div className="p-4">
+          <p className="text-gray-600 mb-4 text-sm">
+            Sube las fotos de tus jugadoras. Los nombres de los archivos se usarán como nombres de las jugadoras.
+            {selectedPhotos.length < 12 && selectedPhotos.length > 0 && (
+              <span className="block mt-1 text-orange-600 font-medium">
+                📝 Con {selectedPhotos.length} fotos: {Math.min(6, selectedPhotos.length)} sanas,{" "}
+                {Math.max(0, selectedPhotos.length - 6)} tullis
+              </span>
+            )}
+            {selectedPhotos.length >= 12 && (
+              <span className="block mt-1 text-green-600 font-medium">
+                ✅ Con {selectedPhotos.length} fotos: Se elegirán 12 al azar (6 sanas, 6 tullis)
+              </span>
+            )}
+          </p>
+
+          {/* File Input */}
+          <div className="mb-4">
             <input
+              ref={fileInputRef}
               type="file"
               multiple
               accept="image/*"
               onChange={handleFileSelect}
               className="hidden"
-              id="photo-upload"
             />
-            <label htmlFor="photo-upload" className="cursor-pointer">
-              <Upload className="h-12 w-12 text-pink-400 mx-auto mb-4" />
-              <p className="text-lg font-medium text-gray-700 mb-2">Haz clic para seleccionar fotos</p>
-              <p className="text-sm text-gray-500">Puedes subir múltiples fotos a la vez (máximo 12)</p>
-            </label>
+            <Button
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full bg-blue-800 hover:bg-blue-900 text-white font-bold py-3 rounded-2xl"
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              SELECCIONAR FOTOS
+            </Button>
           </div>
 
-          {/* Previews */}
-          {previews.length > 0 && (
-            <div>
-              <h3 className="text-lg font-semibold mb-4 text-purple-700">Fotos seleccionadas ({previews.length})</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {previews.map((preview, index) => (
-                  <div key={index} className="relative group">
+          {/* Selected Photos - MÁS PEQUEÑAS */}
+          {selectedPhotos.length > 0 && (
+            <div className="mb-4">
+              <h3 className="font-bold text-base mb-2">
+                Fotos seleccionadas: {selectedPhotos.length}
+                {selectedPhotos.length > 0 && <span className="text-green-600 ml-2">✅</span>}
+              </h3>
+              <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 gap-2 max-h-40 overflow-y-auto">
+                {selectedPhotos.map((photo, index) => (
+                  <div key={index} className="text-center">
                     <img
-                      src={preview || "/placeholder.svg"}
-                      alt={`Preview ${index + 1}`}
-                      className="w-full h-24 object-cover rounded-lg border-2 border-pink-200"
+                      src={URL.createObjectURL(photo.file) || "/placeholder.svg"}
+                      alt={photo.name}
+                      className="w-full h-12 object-cover rounded border border-gray-200"
                     />
-                    <button
-                      onClick={() => removeFile(index)}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
-                    >
-                      ×
-                    </button>
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-1 rounded-b-lg truncate">
-                      {selectedFiles[index]?.name}
-                    </div>
+                    <p className="text-xs mt-1 truncate text-gray-600" style={{ fontSize: "10px" }}>
+                      {photo.name}
+                    </p>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Información */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-semibold text-blue-800 mb-2">ℹ️ Información:</h4>
-            <ul className="text-sm text-blue-700 space-y-1">
-              <li>• Máximo 6 jugadoras irán al campo</li>
-              <li>• El resto irán al banquillo como "tullis"</li>
-              <li>• Si subes más de 12 fotos, se seleccionarán 12 al azar</li>
-              <li>• Los nombres se extraen del nombre del archivo</li>
-            </ul>
-          </div>
-
-          {/* Botones */}
-          <div className="flex gap-4 justify-end">
-            <Button variant="outline" onClick={onClose} className="border-gray-300 bg-transparent">
+          {/* Action Buttons */}
+          <div className="flex gap-3">
+            <Button onClick={onClose} variant="outline" className="flex-1 bg-transparent">
               Cancelar
             </Button>
             <Button
-              onClick={handleUpload}
-              disabled={selectedFiles.length === 0}
-              className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white"
+              onClick={handleUsePhotos}
+              disabled={selectedPhotos.length === 0}
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold"
             >
-              <ImageIcon className="h-4 w-4 mr-2" />
-              ¡Usar Fotos! ({selectedFiles.length})
+              <Check className="h-4 w-4 mr-2" />
+              USAR ESTAS FOTOS ({selectedPhotos.length})
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }

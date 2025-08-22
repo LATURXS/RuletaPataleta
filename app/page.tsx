@@ -73,7 +73,6 @@ export default function VolleyballGame() {
   const [showWheel, setShowWheel] = useState(false)
   const [wheelSize, setWheelSize] = useState<"large" | "small">("large")
   const [playersAppearing, setPlayersAppearing] = useState(false)
-  const [isFirstTime, setIsFirstTime] = useState(true) // Nuevo estado para detectar primera vez
 
   const initializePlayers = useCallback(
     (photos?: { file: File; name: string }[]) => {
@@ -234,7 +233,6 @@ export default function VolleyballGame() {
       urls[`uploaded_${index}`] = URL.createObjectURL(photo.file)
     })
     setPhotoUrls(urls)
-    setIsFirstTime(false) // Ya no es la primera vez
 
     // Mostrar animación de ruleta
     setShowWheel(true)
@@ -306,26 +304,13 @@ export default function VolleyballGame() {
               )}
             </div>
             <div className="flex gap-2">
-              {/* Botón SUBE LAS FOTOS - Condicional */}
-              {isFirstTime && uploadedPhotos.length === 0 ? (
-                // PRIMERA VEZ: Rosa fucsia parpadeante
-                <Button
-                  onClick={() => setShowUploader(true)}
-                  className="animate-pulse-pink text-white font-bold px-6 py-3 rounded-2xl shadow-lg border-0"
-                >
-                  <Camera className="h-4 w-4 mr-2" />
-                  SUBE LAS FOTOS
-                </Button>
-              ) : (
-                // SIGUIENTES VECES: Azul normal
-                <Button
-                  onClick={() => setShowUploader(true)}
-                  className="bg-blue-800 hover:bg-blue-900 text-white font-bold px-6 py-3 rounded-2xl shadow-lg"
-                >
-                  <Camera className="h-4 w-4 mr-2" />
-                  SUBE LAS FOTOS
-                </Button>
-              )}
+              <Button
+                onClick={() => setShowUploader(true)}
+                className="bg-blue-800 hover:bg-blue-900 text-white font-bold px-6 py-3 rounded-2xl shadow-lg animate-pulse"
+              >
+                <Camera className="h-4 w-4 mr-2" />
+                SUBE LAS FOTOS
+              </Button>
               <Button onClick={shareApp} variant="outline" className="rounded-2xl bg-transparent">
                 <Share2 className="h-4 w-4 mr-2" />
                 Compartir

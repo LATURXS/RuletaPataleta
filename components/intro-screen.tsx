@@ -1,80 +1,46 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Play } from "lucide-react"
-
 interface IntroScreenProps {
   onComplete: () => void
 }
 
 export function IntroScreen({ onComplete }: IntroScreenProps) {
-  const [showButton, setShowButton] = useState(false)
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowButton(true)
-    }, 2000)
-    return () => clearTimeout(timer)
-  }, [])
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-800 to-red-900 flex items-center justify-center relative overflow-hidden">
-      {/* Efectos de fondo */}
-      <div className="absolute inset-0">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute animate-pulse"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 2}s`,
-              fontSize: `${Math.random() * 20 + 10}px`,
-            }}
+    <div className="fixed inset-0 bg-gradient-to-br from-green-400 via-green-500 to-green-600 flex items-center justify-center z-50 p-4">
+      <div className="max-w-3xl mx-auto text-center">
+        {/* Pelota como botón de inicio con texto JUGAR */}
+        <div className="mb-8">
+          <button
+            onClick={onComplete}
+            className="relative animate-bounce hover:scale-110 transition-all duration-300 cursor-pointer focus:outline-none focus:ring-4 focus:ring-white/50 rounded-full p-4"
+            aria-label="Iniciar juego"
           >
-            {["🏐", "⭐", "🎯", "🎲", "✨"][Math.floor(Math.random() * 5)]}
-          </div>
-        ))}
-      </div>
+            <div className="relative">
+              <span className="text-9xl">🏐</span>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-lg font-bold text-white bg-black/70 px-3 py-1 rounded-full shadow-lg">JUGAR</span>
+              </div>
+            </div>
+          </button>
+        </div>
 
-      {/* Contenido principal */}
-      <div className="text-center z-10 px-8">
-        <div className="animate-bounce-in">
-          <h1 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 mb-4 drop-shadow-2xl">
-            LA RULETA
-          </h1>
-          <h2 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 mb-8 drop-shadow-2xl">
-            PATALETA
+        {/* Título en una línea */}
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 animate-pulse whitespace-nowrap">
+          🎯 LA RULETA PATALETA
+        </h1>
+
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 md:p-8 shadow-2xl">
+          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-green-800 mb-4 md:mb-6">
+            ¿Cómo está el equipo para el próximo partido?
           </h2>
+
+          <p className="text-base md:text-lg lg:text-xl text-gray-700 leading-relaxed mb-4">
+            Sube las fotos de tus jugadoras (con sus nombres), y gira la ruleta para saber quién sale al campo y quién
+            se queda regando las plantitas.
+          </p>
+
+          <p className="text-xl md:text-2xl font-bold text-green-600 animate-pulse">¡Juas, juas, juas...! 😂</p>
         </div>
-
-        <div className="text-2xl md:text-3xl text-white font-bold mb-8 animate-pulse">
-          🏐 Juego de Volleyball Interactivo 🏐
-        </div>
-
-        <div className="text-lg md:text-xl text-pink-200 mb-12 max-w-2xl mx-auto">
-          ¡Descubre quién juega y quién se queda en el banquillo!
-          <br />
-          Sube las fotos de tus jugadoras y deja que la ruleta decida su destino
-        </div>
-
-        {showButton && (
-          <div className="animate-bounce-in">
-            <Button
-              onClick={onComplete}
-              className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-bold text-2xl px-12 py-6 rounded-full shadow-2xl transform transition-all duration-300 hover:scale-110 border-4 border-yellow-400"
-            >
-              <Play className="h-8 w-8 mr-4" />
-              ¡JUAGAR!
-            </Button>
-          </div>
-        )}
-      </div>
-
-      {/* Efectos adicionales */}
-      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white text-sm opacity-70">
-        Presiona el botón para comenzar la diversión
       </div>
     </div>
   )
