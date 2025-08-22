@@ -17,19 +17,35 @@ export function PhotoUploaderComponent({ onPhotosUploaded, onClose }: PhotoUploa
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || [])
-    const photoData = files.map((file) => ({
+
+    // Limitar a máximo 16 fotos
+    let finalFiles = files
+    let showWarning = false
+
+    if (files.length > 16) {
+      finalFiles = files.slice(0, 16)
+      showWarning = true
+    }
+
+    const photoData = finalFiles.map((file) => ({
       file,
       name: file.name.replace(/\.[^/.]+$/, ""), // Remover extensión
     }))
+
     setSelectedPhotos(photoData)
+
+    // Mostrar mensaje de advertencia si se intentaron subir más de 16
+    if (showWarning) {
+      alert("Has intentado subir más de 16 fotos, solo se subirán las primeras 16 fotos elegidas.")
+    }
   }
 
   const handleUsePhotos = () => {
-    if (selectedPhotos.length > 0) {
+    if (selectedPhotos.length >= 2) {
       onPhotosUploaded(selectedPhotos)
       onClose()
     } else {
-      alert("Necesitas subir al menos 1 foto para jugar")
+      alert("Necesitas subir al menos 2 fotos para jugar")
     }
   }
 
@@ -47,8 +63,9 @@ export function PhotoUploaderComponent({ onPhotosUploaded, onClose }: PhotoUploa
         {/* Content */}
         <div className="p-4">
           <p className="text-gray-600 mb-4 text-sm">
-            Sube las fotos de tus jugadoras. Los nombres de los archivos se usarán como nombres de las jugadoras.
-            {selectedPhotos.length < 12 && selectedPhotos.length > 0 && (
+            Sube entre 2 y 16 fotos de tus jugadoras. Los nombres de los archivos se usarán como nombres de las
+            jugadoras.
+            {selectedPhotos.length < 12 && selectedPhotos.length >= 2 && (
               <span className="block mt-1 text-orange-600 font-medium">
                 📝 Con {selectedPhotos.length} fotos: {Math.min(6, selectedPhotos.length)} sanas,{" "}
                 {Math.max(0, selectedPhotos.length - 6)} tullis
@@ -56,7 +73,7 @@ export function PhotoUploaderComponent({ onPhotosUploaded, onClose }: PhotoUploa
             )}
             {selectedPhotos.length >= 12 && (
               <span className="block mt-1 text-green-600 font-medium">
-                ✅ Con {selectedPhotos.length} fotos: Se elegirán 12 al azar (6 sanas, 6 tullis)
+                ✅ Con {selectedPhotos.length} fotos: Se elegirán 12 al azar para jugar (6 sanas, 6 tullis)
               </span>
             )}
           </p>

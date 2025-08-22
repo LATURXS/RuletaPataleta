@@ -85,11 +85,14 @@ export default function VolleyballGame() {
       const playersData = photos || uploadedPhotos
 
       if (playersData.length > 0) {
-        // Seleccionar fotos aleatoriamente si hay más de 12
-        let selectedPhotos = playersData
-        if (playersData.length > 12) {
-          const shuffledIndices = shuffleArray([...Array(playersData.length).keys()])
-          selectedPhotos = shuffledIndices.slice(0, 12).map((i) => playersData[i])
+        // Siempre usar todas las fotos disponibles (hasta 16) para selección aleatoria
+        const allPhotos = playersData
+
+        // Seleccionar 12 fotos aleatoriamente de todas las disponibles
+        let selectedPhotos = allPhotos
+        if (allPhotos.length > 12) {
+          const shuffledIndices = shuffleArray([...Array(allPhotos.length).keys()])
+          selectedPhotos = shuffledIndices.slice(0, 12).map((i) => allPhotos[i])
         }
 
         // Determinar cuántas van al campo (máximo 6) y cuántas al banquillo
@@ -103,10 +106,11 @@ export default function VolleyballGame() {
         for (let i = 0; i < healthyCount; i++) {
           const positionKey = positionKeys[i % positionKeys.length]
           const photoData = shuffledPhotos[i]
+          const originalIndex = playersData.indexOf(photoData)
           initialPlayers.push({
             id: i + 1,
             name: photoData.name.replace(/_/g, " "),
-            faceImage: `uploaded_${playersData.indexOf(photoData)}`,
+            faceImage: `uploaded_${originalIndex}`,
             isHealthy: true,
             position: fieldPositions[i],
             positionName: posicionesData[positionKey as keyof typeof posicionesData],
@@ -118,10 +122,11 @@ export default function VolleyballGame() {
         for (let i = healthyCount; i < selectedPhotos.length && i < 12; i++) {
           const injuryKey = injuryKeys[(i - healthyCount) % injuryKeys.length]
           const photoData = shuffledPhotos[i]
+          const originalIndex = playersData.indexOf(photoData)
           initialPlayers.push({
             id: i + 1,
             name: photoData.name.replace(/_/g, " "),
-            faceImage: `uploaded_${playersData.indexOf(photoData)}`,
+            faceImage: `uploaded_${originalIndex}`,
             isHealthy: false,
             position: benchPositions[i - healthyCount],
             injury: lesionesData[injuryKey as keyof typeof lesionesData],
@@ -129,7 +134,7 @@ export default function VolleyballGame() {
           })
         }
 
-        // Completar con jugadoras sin foto si es necesario (hasta 12 total)
+        // Si hay menos de 12 fotos, completar con jugadoras por defecto
         const totalPlayers = initialPlayers.length
         const defaultNames = ["Raquel", "Rachel", "Queli", "Rak"]
 
