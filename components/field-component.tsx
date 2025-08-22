@@ -4,10 +4,10 @@ import type { ReactNode } from "react"
 
 interface FieldComponentProps {
   children: ReactNode
-  isSpinning?: boolean
+  isSpinning: boolean
 }
 
-export function FieldComponent({ children, isSpinning = false }: FieldComponentProps) {
+export function FieldComponent({ children, isSpinning }: FieldComponentProps) {
   return (
     <div className="relative">
       {/* Campo de vóley realista - 9x9 metros (mi lado del campo) */}

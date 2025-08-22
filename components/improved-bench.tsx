@@ -4,10 +4,10 @@ import type { ReactNode } from "react"
 
 interface ImprovedBenchProps {
   children: ReactNode
-  isSpinning?: boolean
+  isSpinning: boolean
 }
 
-export function ImprovedBench({ children, isSpinning = false }: ImprovedBenchProps) {
+export function ImprovedBench({ children, isSpinning }: ImprovedBenchProps) {
   return (
     <div className="relative">
       {/* Decoraciones con plantas y flores POR ENCIMA del marco */}

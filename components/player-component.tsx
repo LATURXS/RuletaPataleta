@@ -5,11 +5,11 @@ import type { PlayerData } from "@/app/page"
 interface PlayerComponentProps {
   player: PlayerData
   onClick: () => void
-  isSpinning?: boolean
+  isSpinning: boolean
   photoUrl?: string
 }
 
-export function PlayerComponent({ player, onClick, isSpinning = false, photoUrl }: PlayerComponentProps) {
+export function PlayerComponent({ player, onClick, isSpinning, photoUrl }: PlayerComponentProps) {
   return (
     <div
       className={`absolute cursor-pointer transition-all duration-500 ${
@@ -87,7 +87,7 @@ export function PlayerComponent({ player, onClick, isSpinning = false, photoUrl 
           </div>
         </div>
 
-        {/* Nombre de la jugadora - justo debajo de los pies */}
+        {/* Nombre de la jugadora - Tullis MÁS ARRIBA para no taparse */}
         <div
           className={`${
             player.isHealthy ? "mt-2" : "-mt-2"

@@ -1,69 +1,46 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-
 interface IntroScreenProps {
   onComplete: () => void
 }
 
 export function IntroScreen({ onComplete }: IntroScreenProps) {
-  const [showButton, setShowButton] = useState(false)
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowButton(true)
-    }, 2000)
-
-    return () => clearTimeout(timer)
-  }, [])
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-400 via-green-500 to-green-600 flex flex-col items-center justify-center relative overflow-hidden">
-      {/* Decoraciones de fondo */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-10 left-10 text-6xl animate-bounce">🏐</div>
-        <div className="absolute top-20 right-20 text-4xl animate-pulse">⚡</div>
-        <div className="absolute bottom-20 left-20 text-5xl animate-spin">🎯</div>
-        <div className="absolute bottom-10 right-10 text-3xl animate-bounce">💧</div>
-        <div className="absolute top-1/2 left-10 text-4xl animate-pulse">🏥</div>
-        <div className="absolute top-1/3 right-10 text-5xl animate-bounce">🌪️</div>
-      </div>
-
-      {/* Contenido principal */}
-      <div className="text-center z-10 px-4">
-        <h1 className="text-6xl md:text-8xl font-bold text-white mb-8 animate-pulse">🎯 LA RULETA</h1>
-        <h2 className="text-4xl md:text-6xl font-bold text-yellow-300 mb-12 animate-bounce">PATALETA</h2>
-
-        <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-8 mb-8 max-w-2xl">
-          <h3 className="text-2xl font-bold text-white mb-4">📋 INSTRUCCIONES</h3>
-          <div className="text-white text-lg space-y-3 text-left">
-            <p>
-              🏐 <strong>6 jugadoras sanas</strong> van al campo
-            </p>
-            <p>
-              🏥 <strong>6 jugadoras tullis</strong> van al banquillo
-            </p>
-            <p>
-              📸 <strong>Sube fotos</strong> de tus jugadoras
-            </p>
-            <p>
-              🎲 <strong>Redistribuye</strong> cuando quieras
-            </p>
-            <p>
-              🎯 <strong>¡Que gane la mejor!</strong>
-            </p>
-          </div>
+    <div className="fixed inset-0 bg-gradient-to-br from-green-400 via-green-500 to-green-600 flex items-center justify-center z-50 p-4">
+      <div className="max-w-3xl mx-auto text-center">
+        {/* Pelota como botón de inicio con texto JUGAR */}
+        <div className="mb-8">
+          <button
+            onClick={onComplete}
+            className="relative animate-bounce hover:scale-110 transition-all duration-300 cursor-pointer focus:outline-none focus:ring-4 focus:ring-white/50 rounded-full p-4"
+            aria-label="Iniciar juego"
+          >
+            <div className="relative">
+              <span className="text-9xl">🏐</span>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-lg font-bold text-white bg-black/70 px-3 py-1 rounded-full shadow-lg">JUGAR</span>
+              </div>
+            </div>
+          </button>
         </div>
 
-        {showButton && (
-          <Button
-            onClick={onComplete}
-            className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-2xl px-12 py-6 rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-300 animate-pulse"
-          >
-            🎮 JUAGAR
-          </Button>
-        )}
+        {/* Título en una línea */}
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 animate-pulse whitespace-nowrap">
+          🎯 LA RULETA PATALETA
+        </h1>
+
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 md:p-8 shadow-2xl">
+          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-green-800 mb-4 md:mb-6">
+            ¿Cómo está el equipo para el próximo partido?
+          </h2>
+
+          <p className="text-base md:text-lg lg:text-xl text-gray-700 leading-relaxed mb-4">
+            Sube las fotos de tus jugadoras (con sus nombres), y gira la ruleta para saber quién sale al campo y quién
+            se queda regando las plantitas.
+          </p>
+
+          <p className="text-xl md:text-2xl font-bold text-green-600 animate-pulse">¡Juas, juas, juas...! 😂</p>
+        </div>
       </div>
     </div>
   )
