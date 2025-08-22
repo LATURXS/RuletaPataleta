@@ -1,15 +1,17 @@
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
-import { Player } from "@/components/player"
-import { Field } from "@/components/field"
-import { Bench } from "@/components/bench"
-import { PlayerSummary } from "@/components/player-summary"
-import { PhotoUploader } from "@/components/photo-uploader"
+import { useState, useCallback, useEffect, useMemo } from "react"
+import { PlayerComponent } from "@/components/player-component"
+import { FieldComponent } from "@/components/field-component"
+import { ImprovedBench } from "@/components/improved-bench"
+import { PhotoUploaderComponent } from "@/components/photo-uploader-component"
+import { IntroScreen } from "@/components/intro-screen"
+import { SpinningWheel } from "@/components/spinning-wheel"
+import { RouletteButton } from "@/components/roulette-button"
+import { LanguageSelector } from "@/components/language-selector"
 import { Button } from "@/components/ui/button"
 import { Camera, Share2 } from "lucide-react"
-import posicionesData from "@/data/posiciones.json"
-import lesionesData from "@/data/lesiones.json"
+import { useTranslation } from "@/contexts/language-context"
 
 export interface PlayerData {
   id: number
@@ -19,36 +21,39 @@ export interface PlayerData {
   position: { x: number; y: number }
   positionName?: string
   injury?: string
+  isVisible?: boolean
 }
 
-// Posiciones específicas del vóley (ajustadas - más cerca de la red para 4,3,2)
+// Posiciones realistas del vóley (campo 9x9 metros)
 const getVolleyballPositions = () => {
   return [
-    // Línea de ataque (más cerca de la red) - posiciones 2, 3, 4
-    { x: 100, y: 80 }, // Posición 4 (Punta) - más espacio para nombres
-    { x: 225, y: 80 }, // Posición 3 (Central) - más espacio para nombres
-    { x: 350, y: 80 }, // Posición 2 (Opuesta) - más espacio para nombres
+    // Línea de ataque (cerca de la red)
+    { x: 120, y: 80 }, // Posición 4 (Punta izquierda)
+    { x: 225, y: 80 }, // Posición 3 (Central)
+    { x: 330, y: 80 }, // Posición 2 (Opuesta/Punta derecha)
 
-    // Línea de fondo - posiciones 5, 6, 1
-    { x: 100, y: 250 }, // Posición 5 (Colocadora) - más separación
-    { x: 225, y: 250 }, // Posición 6 (Líbero) - más separación
-    { x: 350, y: 250 }, // Posición 1 (Punta) - más separación
+    // Línea de fondo (zona de defensa)
+    { x: 120, y: 280 }, // Posición 5 (Líbero/Defensa izquierda)
+    { x: 225, y: 280 }, // Posición 6 (Defensa central)
+    { x: 330, y: 280 }, // Posición 1 (Colocadora/Defensa derecha)
   ]
 }
 
-// Posiciones en el banquillo
+// Posiciones en el banquillo - 2 BANCOS con 3 JUGADORAS cada uno
 const getBenchPositions = () => {
   return [
-    { x: 30, y: 80 },
-    { x: 130, y: 80 },
-    { x: 30, y: 180 },
-    { x: 130, y: 180 },
-    { x: 30, y: 280 }, // Estas dos de abajo estarán sentadas
-    { x: 130, y: 280 }, // Estas dos de abajo estarán sentadas
+    // Banco superior - 3 jugadoras bien separadas
+    { x: 120, y: 80 }, // Izquierda banco superior
+    { x: 250, y: 80 }, // Centro banco superior
+    { x: 380, y: 80 }, // Derecha banco superior
+
+    // Banco inferior - 3 jugadoras bien separadas - MUY ABAJO
+    { x: 120, y: 240 }, // Izquierda banco inferior
+    { x: 250, y: 240 }, // Centro banco inferior
+    { x: 380, y: 240 }, // Derecha banco inferior
   ]
 }
 
-// Función para mezclar array (Fisher-Yates shuffle)
 const shuffleArray = <T,>(array: T[]): T[] => {
   const newArray = [...array]
   for (let i = newArray.length - 1; i > 0; i--) {
@@ -59,88 +64,130 @@ const shuffleArray = <T,>(array: T[]): T[] => {
 }
 
 export default function VolleyballGame() {
+  const [showIntro, setShowIntro] = useState(true)
   const [players, setPlayers] = useState<PlayerData[]>([])
   const [isSpinning, setIsSpinning] = useState(false)
   const [showUploader, setShowUploader] = useState(false)
   const [uploadedPhotos, setUploadedPhotos] = useState<{ file: File; name: string }[]>([])
   const [photoUrls, setPhotoUrls] = useState<{ [key: string]: string }>({})
+  const [showWheel, setShowWheel] = useState(false)
+  const [wheelSize, setWheelSize] = useState<"large" | "small">("large")
+  const [playersAppearing, setPlayersAppearing] = useState(false)
 
-  // Inicializar jugadoras con fotos por defecto o subidas
+  const { t, getPositions, getInjuries } = useTranslation()
+
   const initializePlayers = useCallback(
     (photos?: { file: File; name: string }[]) => {
       const fieldPositions = getVolleyballPositions()
       const benchPositions = getBenchPositions()
-
-      // Mezclar posiciones y lesiones
-      const positionKeys = shuffleArray(Object.keys(posicionesData))
-      const injuryKeys = shuffleArray(Object.keys(lesionesData))
-
+      const positionsData = getPositions()
+      const injuriesData = getInjuries()
+      const positionKeys = shuffleArray(Object.keys(positionsData))
+      const injuryKeys = shuffleArray(Object.keys(injuriesData))
       const initialPlayers: PlayerData[] = []
 
-      // Si hay fotos subidas, usar esas
       const playersData = photos || uploadedPhotos
 
-      if (playersData.length >= 12) {
-        // Crear índices mezclados para seleccionar fotos aleatoriamente
-        const photoIndices = shuffleArray([...Array(playersData.length).keys()]).slice(0, 12)
+      if (playersData.length > 0) {
+        // Siempre usar todas las fotos disponibles (hasta 16) para selección aleatoria
+        const allPhotos = playersData
 
-        // 6 jugadoras sanas
-        for (let i = 0; i < 6; i++) {
-          const positionKey = positionKeys[i]
-          const photoIndex = photoIndices[i]
-          const photoData = playersData[photoIndex]
+        // Seleccionar 12 fotos aleatoriamente de todas las disponibles
+        let selectedPhotos = allPhotos
+        if (allPhotos.length > 12) {
+          const shuffledIndices = shuffleArray([...Array(allPhotos.length).keys()])
+          selectedPhotos = shuffledIndices.slice(0, 12).map((i) => allPhotos[i])
+        }
 
+        // Determinar cuántas van al campo (máximo 6) y cuántas al banquillo
+        const healthyCount = Math.min(6, selectedPhotos.length)
+        const injuredCount = Math.max(0, selectedPhotos.length - 6)
+
+        // Mezclar las fotos seleccionadas para asignación aleatoria
+        const shuffledPhotos = shuffleArray(selectedPhotos)
+
+        // Jugadoras sanas (máximo 6)
+        for (let i = 0; i < healthyCount; i++) {
+          const positionKey = positionKeys[i % positionKeys.length]
+          const photoData = shuffledPhotos[i]
+          const originalIndex = playersData.indexOf(photoData)
           initialPlayers.push({
             id: i + 1,
             name: photoData.name.replace(/_/g, " "),
-            faceImage: `uploaded_${photoIndex}`, // Usar el índice real del array original
+            faceImage: `uploaded_${originalIndex}`,
             isHealthy: true,
             position: fieldPositions[i],
-            positionName: posicionesData[positionKey as keyof typeof posicionesData],
+            positionName: positionsData[positionKey as keyof typeof positionsData],
+            isVisible: false,
           })
         }
 
-        // 6 jugadoras lesionadas
-        for (let i = 6; i < 12; i++) {
-          const injuryKey = injuryKeys[i - 6]
-          const photoIndex = photoIndices[i]
-          const photoData = playersData[photoIndex]
-
+        // Jugadoras lesionadas (el resto, máximo 6)
+        for (let i = healthyCount; i < selectedPhotos.length && i < 12; i++) {
+          const injuryKey = injuryKeys[(i - healthyCount) % injuryKeys.length]
+          const photoData = shuffledPhotos[i]
+          const originalIndex = playersData.indexOf(photoData)
           initialPlayers.push({
             id: i + 1,
             name: photoData.name.replace(/_/g, " "),
-            faceImage: `uploaded_${photoIndex}`, // Usar el índice real del array original
+            faceImage: `uploaded_${originalIndex}`,
+            isHealthy: false,
+            position: benchPositions[i - healthyCount],
+            injury: injuriesData[injuryKey as keyof typeof injuriesData],
+            isVisible: false,
+          })
+        }
+
+        // Si hay menos de 12 fotos, completar con jugadoras por defecto
+        const totalPlayers = initialPlayers.length
+        const defaultNames = t("defaultNames") as string[]
+
+        // Completar sanas hasta 6 si es necesario
+        for (let i = healthyCount; i < 6 && totalPlayers + (i - healthyCount) < 12; i++) {
+          const positionKey = positionKeys[i % positionKeys.length]
+          initialPlayers.push({
+            id: totalPlayers + (i - healthyCount) + 1,
+            name: defaultNames[(totalPlayers + (i - healthyCount)) % 4],
+            faceImage: `default_${totalPlayers + (i - healthyCount) + 1}`,
+            isHealthy: true,
+            position: fieldPositions[i],
+            positionName: positionsData[positionKey as keyof typeof positionsData],
+            isVisible: false,
+          })
+        }
+
+        // Completar lesionadas hasta 12 total
+        const currentTotal = initialPlayers.length
+        for (let i = currentTotal; i < 12; i++) {
+          const injuryKey = injuryKeys[(i - 6) % injuryKeys.length]
+          initialPlayers.push({
+            id: i + 1,
+            name: defaultNames[i % 4],
+            faceImage: `default_${i + 1}`,
             isHealthy: false,
             position: benchPositions[i - 6],
-            injury: lesionesData[injuryKey as keyof typeof lesionesData],
+            injury: injuriesData[injuryKey as keyof typeof injuriesData],
+            isVisible: false,
           })
         }
       } else {
-        // Usar fotos por defecto
-        const defaultNames = [
-          "Ana García",
-          "María López",
-          "Carmen Ruiz",
-          "Laura Martín",
-          "Sofía Torres",
-          "Elena Vega",
-          "Isabel Moreno",
-          "Cristina Silva",
-          "Patricia Ramos",
-          "Andrea Jiménez",
-          "Lucía Fernández",
-          "Marta Díaz",
-        ]
+        // Sin fotos: usar nombres por defecto
+        const defaultNames = t("defaultNames") as string[]
+        const repeatedNames = []
+        for (let i = 0; i < 12; i++) {
+          repeatedNames.push(defaultNames[i % 4])
+        }
 
         for (let i = 0; i < 6; i++) {
           const positionKey = positionKeys[i]
           initialPlayers.push({
             id: i + 1,
-            name: defaultNames[i],
+            name: repeatedNames[i],
             faceImage: `default_${i + 1}`,
             isHealthy: true,
             position: fieldPositions[i],
-            positionName: posicionesData[positionKey as keyof typeof posicionesData],
+            positionName: positionsData[positionKey as keyof typeof positionsData],
+            isVisible: false,
           })
         }
 
@@ -148,206 +195,246 @@ export default function VolleyballGame() {
           const injuryKey = injuryKeys[i - 6]
           initialPlayers.push({
             id: i + 1,
-            name: defaultNames[i],
+            name: repeatedNames[i],
             faceImage: `default_${i + 1}`,
             isHealthy: false,
             position: benchPositions[i - 6],
-            injury: lesionesData[injuryKey as keyof typeof lesionesData],
+            injury: injuriesData[injuryKey as keyof typeof injuriesData],
+            isVisible: false,
           })
         }
       }
 
       setPlayers(initialPlayers)
     },
-    [uploadedPhotos],
+    [uploadedPhotos, getPositions, getInjuries, t],
   )
+
+  // Animación de aparición de jugadoras - memoizada para evitar recreación
+  const animatePlayersAppearance = useCallback(() => {
+    setPlayersAppearing(true)
+
+    // Hacer aparecer jugadoras una por una
+    players.forEach((_, index) => {
+      setTimeout(() => {
+        setPlayers((prev) => prev.map((player, i) => (i === index ? { ...player, isVisible: true } : player)))
+      }, index * 250) // 0.25 segundos entre cada aparición
+    })
+
+    setTimeout(
+      () => {
+        setPlayersAppearing(false)
+      },
+      players.length * 250 + 500,
+    )
+  }, [players.length]) // Solo depende de la longitud del array
 
   useEffect(() => {
-    initializePlayers()
-  }, [initializePlayers])
+    if (!showIntro) {
+      initializePlayers()
+    }
+  }, [showIntro, initializePlayers])
 
-  const handlePhotosUploaded = useCallback(
-    (photos: { file: File; name: string }[]) => {
-      setUploadedPhotos(photos)
+  const handlePhotosUploaded = useCallback((photos: { file: File; name: string }[]) => {
+    setUploadedPhotos(photos)
+    const urls: { [key: string]: string } = {}
+    photos.forEach((photo, index) => {
+      urls[`uploaded_${index}`] = URL.createObjectURL(photo.file)
+    })
+    setPhotoUrls(urls)
 
-      // Crear URLs para las fotos usando el índice correcto
-      const urls: { [key: string]: string } = {}
-      photos.forEach((photo, index) => {
-        urls[`uploaded_${index}`] = URL.createObjectURL(photo.file)
-      })
-      setPhotoUrls(urls)
+    // Mostrar animación de ruleta
+    setShowWheel(true)
+    setWheelSize("large")
+    setIsSpinning(true)
+  }, [])
 
-      // Reinicializar jugadoras con las nuevas fotos
-      initializePlayers(photos)
-    },
-    [initializePlayers],
-  )
+  // Función memoizada para completar el spin
+  const handleWheelSpinComplete = useCallback(() => {
+    setIsSpinning(false)
+    setWheelSize("small")
+    initializePlayers(uploadedPhotos)
+
+    // Iniciar animación de aparición después de un breve delay
+    setTimeout(() => {
+      animatePlayersAppearance()
+    }, 500)
+  }, [uploadedPhotos, initializePlayers, animatePlayersAppearance])
 
   const handleSpin = useCallback(() => {
+    setShowWheel(true)
+    setWheelSize("large")
     setIsSpinning(true)
 
-    setTimeout(() => {
-      initializePlayers()
-      setIsSpinning(false)
-    }, 2500)
-  }, [initializePlayers])
+    // Ocultar todas las jugadoras
+    setPlayers((prev) => prev.map((player) => ({ ...player, isVisible: false })))
+  }, [])
 
-  const handlePlayerClick = useCallback(
-    (playerId: number) => {
-      if (isSpinning) return
+  const handleSmallWheelClick = useCallback(() => {
+    handleSpin()
+  }, [handleSpin])
 
-      setPlayers((prevPlayers) => {
-        const fieldPositions = getVolleyballPositions()
-        const benchPositions = getBenchPositions()
-        const positionKeys = Object.keys(posicionesData)
-        const injuryKeys = Object.keys(lesionesData)
-
-        return prevPlayers.map((player) => {
-          if (player.id === playerId) {
-            const newIsHealthy = !player.isHealthy
-
-            if (newIsHealthy) {
-              // Mover al campo
-              const healthyPlayers = prevPlayers.filter((p) => p.isHealthy && p.id !== playerId)
-              const availableFieldPositions = fieldPositions.filter(
-                (pos) => !healthyPlayers.some((p) => p.position.x === pos.x && p.position.y === pos.y),
-              )
-              const newPosition = availableFieldPositions[0] || fieldPositions[0]
-              const randomPositionKey = positionKeys[Math.floor(Math.random() * positionKeys.length)]
-
-              return {
-                ...player,
-                isHealthy: newIsHealthy,
-                position: newPosition,
-                positionName: posicionesData[randomPositionKey as keyof typeof posicionesData],
-                injury: undefined,
-              }
-            } else {
-              // Mover al banquillo
-              const injuredPlayers = prevPlayers.filter((p) => !p.isHealthy && p.id !== playerId)
-              const availableBenchPositions = benchPositions.filter(
-                (pos) => !injuredPlayers.some((p) => p.position.x === pos.x && p.position.y === pos.y),
-              )
-              const newPosition = availableBenchPositions[0] || benchPositions[0]
-              const randomInjuryKey = injuryKeys[Math.floor(Math.random() * injuryKeys.length)]
-
-              return {
-                ...player,
-                isHealthy: newIsHealthy,
-                position: newPosition,
-                positionName: undefined,
-                injury: lesionesData[randomInjuryKey as keyof typeof lesionesData],
-              }
-            }
-          }
-          return player
-        })
-      })
-    },
-    [isSpinning],
-  )
-
-  const shareApp = () => {
+  const shareApp = useCallback(() => {
     if (navigator.share) {
       navigator.share({
-        title: "LA RULETA PATALETA",
-        text: "¡Juega con nosotras a La Ruleta Pataleta! 🏐",
+        title: t("app.title"),
+        text: t("app.shareMessage"),
         url: window.location.href,
       })
     } else {
       navigator.clipboard.writeText(window.location.href)
-      alert("¡Enlace copiado! Compártelo con tus amigas 🏐")
+      alert(t("app.linkCopied"))
     }
+  }, [t])
+
+  // Memoizar los jugadores filtrados
+  const healthyPlayers = useMemo(() => players.filter((p) => p.isHealthy), [players])
+  const injuredPlayers = useMemo(() => players.filter((p) => !p.isHealthy), [players])
+
+  if (showIntro) {
+    return <IntroScreen onComplete={() => setShowIntro(false)} />
   }
 
-  const healthyPlayers = players.filter((p) => p.isHealthy)
-  const injuredPlayers = players.filter((p) => !p.isHealthy)
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-100 to-green-200 p-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-green-800">🎯 LA RULETA PATALETA</h1>
-          <div className="flex gap-2">
-            <Button onClick={() => setShowUploader(true)} className="bg-blue-600 hover:bg-blue-700">
-              <Camera className="h-4 w-4 mr-2" />
-              Subir Fotos
-            </Button>
-            <Button onClick={shareApp} variant="outline">
-              <Share2 className="h-4 w-4 mr-2" />
-              Compartir
-            </Button>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-2xl p-6 relative overflow-hidden">
-          {/* Botón de remolino */}
-          <div className="text-center mb-6">
-            <button
-              onClick={handleSpin}
-              disabled={isSpinning}
-              className={`px-8 py-4 text-xl font-bold rounded-lg shadow-lg transition-all duration-300 ${
-                isSpinning
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-purple-600 hover:bg-purple-700 text-white hover:scale-105"
-              }`}
-            >
-              {isSpinning ? (
-                <span className="flex items-center gap-2">
-                  <div className="animate-spin text-2xl">🌪️</div>
-                  Redistribuyendo...
-                </span>
-              ) : (
-                "🎲 Redistribuir Jugadoras"
+    <div className="min-h-screen bg-gradient-to-b from-green-100 to-green-200">
+      {/* Header */}
+      <div className="sticky top-0 z-40 bg-white/90 backdrop-blur-sm shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-4">
+              <h1 className="text-2xl sm:text-4xl font-bold text-green-800">{t("app.title")}</h1>
+              {showWheel && wheelSize === "small" && (
+                <SpinningWheel
+                  isSpinning={false}
+                  onSpinComplete={handleWheelSpinComplete}
+                  isSmall={true}
+                  onClick={handleSmallWheelClick}
+                />
               )}
-            </button>
-          </div>
-
-          <div className="flex gap-6">
-            {/* Campo de Vóley */}
-            <div className="relative">
-              <h2 className="text-2xl font-semibold mb-4 text-green-700">Las sanas</h2>
-              <Field isSpinning={isSpinning}>
-                {healthyPlayers.map((player) => (
-                  <Player
-                    key={player.id}
-                    player={player}
-                    onClick={() => handlePlayerClick(player.id)}
-                    isSpinning={isSpinning}
-                    photoUrl={photoUrls[player.faceImage]}
-                  />
-                ))}
-              </Field>
-              <div className="mt-2 text-sm text-gray-600">Jugadoras sanas: {healthyPlayers.length}</div>
             </div>
-
-            {/* Banquillo */}
-            <div className="relative">
-              <h2 className="text-2xl font-semibold mb-4 text-red-700">Las tullis</h2>
-              <Bench isSpinning={isSpinning}>
-                {injuredPlayers.map((player) => (
-                  <Player
-                    key={player.id}
-                    player={player}
-                    onClick={() => handlePlayerClick(player.id)}
-                    isSpinning={isSpinning}
-                    photoUrl={photoUrls[player.faceImage]}
-                  />
-                ))}
-              </Bench>
-              <div className="mt-2 text-sm text-gray-600">Jugadoras lesionadas: {injuredPlayers.length}</div>
+            <div className="flex items-center gap-2">
+              <LanguageSelector />
+              <Button
+                onClick={() => setShowUploader(true)}
+                className="bg-blue-800 hover:bg-blue-900 text-white font-bold px-6 py-3 rounded-2xl shadow-lg animate-pulse"
+              >
+                <Camera className="h-4 w-4 mr-2" />
+                {t("photoUploader.uploadPhotos")}
+              </Button>
+              <Button onClick={shareApp} variant="outline" className="rounded-2xl bg-transparent">
+                <Share2 className="h-4 w-4 mr-2" />
+                {t("app.share")}
+              </Button>
             </div>
           </div>
-
-          {/* Resumen de jugadoras */}
-          <PlayerSummary healthyPlayers={healthyPlayers} injuredPlayers={injuredPlayers} />
         </div>
-
-        {/* Uploader Modal */}
-        {showUploader && (
-          <PhotoUploader onPhotosUploaded={handlePhotosUploaded} onClose={() => setShowUploader(false)} />
-        )}
       </div>
+
+      {/* Ruleta grande centrada */}
+      {showWheel && wheelSize === "large" && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <SpinningWheel isSpinning={isSpinning} onSpinComplete={handleWheelSpinComplete} isSmall={false} />
+        </div>
+      )}
+
+      {/* Contenido principal */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="space-y-8">
+          {/* 1. Campo con jugadoras sanas */}
+          <div className="bg-white rounded-2xl shadow-xl p-6">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-green-700 text-center">{t("game.healthyTitle")}</h2>
+            <div className="flex justify-center">
+              <FieldComponent isSpinning={playersAppearing}>
+                {healthyPlayers.map((player) => (
+                  <PlayerComponent
+                    key={player.id}
+                    player={player}
+                    onClick={() => {}}
+                    isSpinning={playersAppearing}
+                    photoUrl={photoUrls[player.faceImage]}
+                  />
+                ))}
+              </FieldComponent>
+            </div>
+            <div className="mt-4 text-center text-gray-600">
+              {t("game.healthyCount", { count: healthyPlayers.length })}
+            </div>
+          </div>
+
+          {/* 2. Lista de posiciones */}
+          <div className="bg-white rounded-2xl shadow-xl p-4">
+            <h2 className="text-xl font-bold mb-4 text-green-700 text-center flex items-center justify-center gap-2">
+              {t("game.positionsTitle")}
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+              {healthyPlayers.map((player) => (
+                <div key={player.id} className="bg-green-50 rounded-lg p-2 border-l-2 border-green-500 text-center">
+                  <div className="font-bold text-green-800 text-sm">{player.name}</div>
+                  <div className="text-green-600 bg-green-100 px-1 py-0.5 rounded-full text-xs inline-block mt-1">
+                    {player.positionName}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 3. Banquillo con jugadoras lesionadas */}
+          <div className="bg-white rounded-2xl shadow-xl p-6">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-red-700 text-center">{t("game.injuredTitle")}</h2>
+            <div className="flex justify-center">
+              <ImprovedBench isSpinning={playersAppearing}>
+                {injuredPlayers.map((player) => (
+                  <PlayerComponent
+                    key={player.id}
+                    player={player}
+                    onClick={() => {}}
+                    isSpinning={playersAppearing}
+                    photoUrl={photoUrls[player.faceImage]}
+                  />
+                ))}
+              </ImprovedBench>
+            </div>
+            <div className="mt-4 text-center text-gray-600">
+              {t("game.injuredCount", { count: injuredPlayers.length })}
+            </div>
+          </div>
+
+          {/* 4. Lista de lesiones */}
+          <div className="bg-white rounded-2xl shadow-xl p-4">
+            <h2 className="text-xl font-bold mb-4 text-red-700 text-center flex items-center justify-center gap-2">
+              {t("game.injuriesTitle")}
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+              {injuredPlayers.map((player) => (
+                <div key={player.id} className="bg-red-50 rounded-lg p-2 border-l-2 border-red-500 text-center">
+                  <div className="font-bold text-red-800 text-sm">{player.name}</div>
+                  <div className="text-red-600 bg-red-100 px-1 py-0.5 rounded-full text-xs inline-block mt-1">
+                    {player.injury}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Botón de redistribuir como ruleta */}
+          {(!showWheel || wheelSize === "small") && (
+            <div className="text-center">
+              <RouletteButton
+                onClick={handleSpin}
+                disabled={isSpinning || playersAppearing}
+                isSpinning={isSpinning || playersAppearing}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Photo Uploader Modal */}
+      {showUploader && (
+        <div className="fixed inset-0 bg-red-500/30 backdrop-blur-sm z-50">
+          <PhotoUploaderComponent onPhotosUploaded={handlePhotosUploaded} onClose={() => setShowUploader(false)} />
+        </div>
+      )}
     </div>
   )
 }
