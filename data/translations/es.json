@@ -13,25 +13,25 @@
     "funnyText": "¡Juas, juas, juas...! 😂"
   },
   "photoUploader": {
-    "title": "📸 Sube las fotos de tus Jugadoras",
+    "title": "📸 Sube las fotos de tus jugadoras",
     "description": "Sube entre 2 y 16 fotos de tus jugadoras. Los nombres de los archivos se usarán como nombres de las jugadoras.",
     "photosInfo": "Con {count} fotos: {healthy} sanas, {injured} tullis",
-    "randomSelection": "Con {count} fotos: Se elegirán 12 al azar para jugar (6 sanas, 6 tullis)",
+    "randomSelection": "Con {count} fotos: se elegirán 12 al azar para jugar (6 sanas, 6 tullis)",
     "selectPhotos": "SELECCIONAR FOTOS",
     "selectedPhotos": "Fotos seleccionadas:",
     "cancel": "Cancelar",
-    "usePhotos": "USAR ESTAS FOTOS ({count})",
+    "usePhotos": "USAR ESTAS FOTOS: ({count})",
     "minPhotosError": "Necesitas subir al menos 2 fotos para jugar",
     "maxPhotosWarning": "Has intentado subir más de 16 fotos, solo se subirán las primeras 16 fotos elegidas.",
     "uploadPhotos": "SUBE LAS FOTOS"
   },
   "game": {
-    "healthyTitle": "🏐 Las sanas - en el campo",
-    "healthyCount": "Jugadoras Sanas: {count}",
+    "healthyTitle": "🏐 Las sanas, en el campo",
+    "healthyCount": "Jugadoras sanas: {count}",
     "positionsTitle": "⚡ Posiciones en el campo",
-    "injuredTitle": "🏥 Las Tullis - Regando plantitas en el banquillo",
+    "injuredTitle": "🏥 Las Tullis, regando plantitas en el banquillo",
     "injuredCount": "Jugadoras lesionadas: {count}",
-    "injuriesTitle": "🏥 Parte de Lesiones"
+    "injuriesTitle": "🏥 Parte de lesiones"
   },
   "roulette": {
     "spinning": "Girando...",
