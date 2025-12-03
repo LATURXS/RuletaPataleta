@@ -13,7 +13,7 @@
     "funnyText": "¡Juas, juas, juas...! 😂"
   },
   "photoUploader": {
-    "title": "📸 Sube las Fotos de tus Jugadoras",
+    "title": "📸 Sube las fotos de tus Jugadoras",
     "description": "Sube entre 2 y 16 fotos de tus jugadoras. Los nombres de los archivos se usarán como nombres de las jugadoras.",
     "photosInfo": "Con {count} fotos: {healthy} sanas, {injured} tullis",
     "randomSelection": "Con {count} fotos: Se elegirán 12 al azar para jugar (6 sanas, 6 tullis)",
@@ -26,10 +26,10 @@
     "uploadPhotos": "SUBE LAS FOTOS"
   },
   "game": {
-    "healthyTitle": "🏐 Las Sanas - En el Campo",
-    "healthyCount": "Jugadoras sanas: {count}",
-    "positionsTitle": "⚡ Posiciones en Campo",
-    "injuredTitle": "🏥 Las Tullis - Regando Plantitas en el Banquillo",
+    "healthyTitle": "🏐 Las sanas - en el campo",
+    "healthyCount": "Jugadoras Sanas: {count}",
+    "positionsTitle": "⚡ Posiciones en el campo",
+    "injuredTitle": "🏥 Las Tullis - Regando plantitas en el banquillo",
     "injuredCount": "Jugadoras lesionadas: {count}",
     "injuriesTitle": "🏥 Parte de Lesiones"
   },
